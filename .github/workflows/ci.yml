@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Backend - Python setup
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install backend deps
+        run: |
+          cd backend
+          python -m venv .venv
+          . .venv/bin/activate
+          pip install -r requirements.txt || true
+
+      - name: Frontend - Node setup
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Frontend install
+        run: |
+          cd frontend
+          if [ -f package.json ]; then npm ci; else echo "No frontend yet"; fi
