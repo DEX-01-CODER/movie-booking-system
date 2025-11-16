@@ -1,0 +1,87 @@
+/* Page Container */
+.home-container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+/* Section Titles */
+.home-container h2 {
+    margin-top: 30px;
+    margin-bottom: 15px;
+    color: #333;
+    border-left: 4px solid #007bff;
+    padding-left: 10px;
+    font-size: 1.5rem;
+}
+
+/* Lists */
+.movie-list,
+.booking-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.movie-item,
+.booking-item {
+    background: #f8f8f8;
+    padding: 12px 15px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Booking delete button */
+.delete-btn {
+    background: #ff4d4d;
+    border: none;
+    color: white;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+.delete-btn:hover {
+    background: #e63939;
+}
+
+/* Create Booking Form */
+form {
+    background: #fafafa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 15px;
+    border: 1px solid #e0e0e0;
+}
+
+form label {
+    font-weight: bold;
+}
+
+form input,
+form select {
+    margin: 6px 0 12px 0;
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+form button {
+    padding: 10px 15px;
+    background: #007bff;
+    border: none;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+form button:hover {
+    background: #0066d6;
+}
