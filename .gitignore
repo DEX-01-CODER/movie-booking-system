@@ -12,3 +12,8 @@ backend/.pytest_cache/
 # OS
 .DS_Store
 Thumbs.db
+
+env/
+
+frontend/node_modules
+backend/.env
