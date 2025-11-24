@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Movie, Booking
+from .models import Movie, Show, Ticket, Review
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -16,14 +16,19 @@ class UserSerializer(serializers.ModelSerializer):
 class MovieSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
-        fields = ["id", "title", "description", "release_date"]
-        extra_kwargs = {"title": {"read_only":True}}
+        fields = '__all__'
 
-
-class BookingSerializer(serializers.ModelSerializer):
+class ShowSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Booking
-        fields = ["id", "user", "movie", "seats", "booked_at"]
-        extra_kwargs = {
-            "booked_at": {"read_only": True}
-        }
+        model = Show
+        fields = '__all__'
+
+class TicketSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ticket
+        fields = '__all__'
+
+class ReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        fields = '__all__'
