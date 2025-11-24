@@ -9,6 +9,7 @@ backend/__pycache__/
 backend/*.sqlite3
 backend/.pytest_cache/
 backend/backend/__pycache__/
+backend/api/__pycache__/
 
 # OS
 .DS_Store
