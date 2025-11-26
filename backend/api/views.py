@@ -27,10 +27,21 @@ class BookingListCreate(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Booking.objects.filter(user=self.request.user)
+        # Filter bookings so users only see their own history
+        return Booking.objects.filter(user=self.request.user).order_by('-booked_at')
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        # Get the movie and quantity from the request data
+        movie = serializer.validated_data.get('movie')
+        quantity = serializer.validated_data.get('quantity')
+
+        # Calculate the total price automatically
+        # Default to 0 if something is missing, though serializer validation handles most of this
+        price = movie.price_per_ticket if movie else 0
+        total = price * quantity
+
+        # Save the booking with the user and the calculated total price
+        serializer.save(user=self.request.user, total_price=total)
 
 
 class BookingDelete(generics.DestroyAPIView):
@@ -39,4 +50,3 @@ class BookingDelete(generics.DestroyAPIView):
 
     def get_queryset(self):
         return Booking.objects.filter(user=self.request.user)
-

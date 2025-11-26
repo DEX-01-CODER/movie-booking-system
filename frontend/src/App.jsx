@@ -3,6 +3,10 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import Login from "./pages/Login"
 import Register from "./pages/Register"
 import Home from "./pages/Home"
+import Booking from "./pages/Booking"
+import Payment from "./pages/Payment"
+import PaymentSuccess from "./pages/PaymentSuccess"
+import OrderHistory from "./pages/OrderHistory"
 import NotFound from "./pages/NotFound"
 import ProtectedRoute from "./components/ProtectedRoute"
 
@@ -11,7 +15,6 @@ function Logout() {
   return <Navigate to="/login" />
 }
 
-// clear the tokens before registering
 function RegisterAndLogout() {
   localStorage.clear()
   return <Register />
@@ -29,6 +32,26 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route path="/book/:movieId" element={
+            <ProtectedRoute>
+                <Booking />
+            </ProtectedRoute>
+        }/>
+        <Route path="/payment" element={
+            <ProtectedRoute>
+                <Payment />
+            </ProtectedRoute>
+        }/>
+        <Route path="/success" element={
+            <ProtectedRoute>
+                <PaymentSuccess />
+            </ProtectedRoute>
+        }/>
+        <Route path="/orders" element={
+            <ProtectedRoute>
+                <OrderHistory />
+            </ProtectedRoute>
+        }/>
         <Route path="/login" element={<Login />} />
         <Route path="/logout" element={<Logout />} />
         <Route path="/register" element={<RegisterAndLogout />} />

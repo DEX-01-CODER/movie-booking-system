@@ -1,0 +1,76 @@
+/* frontend/src/styles/OrderHistory.css */
+
+.order-history-container {
+    max-width: 900px;
+    margin: 40px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    font-family: Arial, sans-serif;
+}
+
+.header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.search-filter {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.search-filter input {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.btn-search, .btn-filter {
+    padding: 8px 12px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.user-icon {
+    font-weight: bold;
+    color: #007bff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* ... keep the rest of your table styles ... */
+h2 { color: #222; margin-bottom: 20px; }
+.orders-table { width: 100%; border-collapse: collapse; }
+.orders-table th { text-align: left; padding: 15px; background: #f1f3f5; color: #444; font-weight: 600; }
+.orders-table td { padding: 15px; border-bottom: 1px solid #eee; color: #333; }
+.status-btn { padding: 8px 16px; border: none; border-radius: 4px; font-weight: 500; cursor: pointer; font-size: 0.9rem; }
+.status-btn.unused { background: #007bff; color: white; }
+.status-btn.used { background: #6c757d; color: white; opacity: 0.8; }
+.status-btn:hover { opacity: 0.9; }
+.btn-back {
+    padding: 8px 12px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 15px;
+    color: #555;
+}
+
+.btn-back:hover {
+    background: #f0f0f0;
+}
