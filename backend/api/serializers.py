@@ -1,4 +1,3 @@
-from django.contrib.auth.models import User
 from rest_framework import serializers
 from .models import (
     Movie, Show, Theater, Seat, ShowSeat,
@@ -7,6 +6,10 @@ from .models import (
 
 
 
+
+# ---------------------------
+# User Serializer (merged)
+# ---------------------------
 class UserSerializer(serializers.ModelSerializer):
     full_name = serializers.CharField(source="first_name", required=False)
     

@@ -1,0 +1,154 @@
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.75); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.25s ease-out forwards;
+    z-index: 9999;
+}
+
+.modal-card {
+    background: #ffffff;
+    width: 850px;
+    max-width: 95%;
+    border-radius: 15px;
+    display: flex;
+    overflow: hidden;
+    position: relative;
+    animation: scaleIn 0.25s ease-out forwards;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.modal-left {
+    width: 40%;
+    background: #181818;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-left .poster {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.modal-right {
+    width: 60%;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.modal-title {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #222;
+}
+
+.modal-meta {
+    color: #777;
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+.modal-desc {
+    font-size: 15px;
+    line-height: 1.5;
+    margin-bottom: 25px;
+    color: #333;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.primary-btn {
+    background: #dd003f; /* Cinematic red tone */
+    color: white;
+    border: none;
+    padding: 12px 18px;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.primary-btn:hover {
+    background: #b90035;
+}
+
+.secondary-btn {
+    background: #ececec;
+    color: #333;
+    border: none;
+    padding: 12px 18px;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.secondary-btn:hover {
+    background: #d9d9d9;
+}
+
+.modal-close {
+    position: absolute;
+    top: 12px;
+    right: 15px;
+    font-size: 22px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #444;
+    transition: 0.2s;
+}
+
+.modal-close:hover {
+    color: #000;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0.92);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@media (max-width: 700px) {
+    .modal-card {
+        flex-direction: column;
+        width: 95%;
+    }
+
+    .modal-left,
+    .modal-right {
+        width: 100%;
+    }
+
+    .modal-left {
+        height: 300px;
+    }
+}

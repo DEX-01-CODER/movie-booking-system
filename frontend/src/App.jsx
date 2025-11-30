@@ -19,11 +19,13 @@ import UserOrders from "./pages/UserOrders.jsx";
 
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
+// Logout component clears local storage and redirects
 function Logout() {
   localStorage.clear()
   return <Navigate to="/login" />
 }
 
+// Clear tokens before registering
 function RegisterAndLogout() {
   localStorage.clear()
   return <Register />
@@ -70,7 +72,7 @@ function App() {
 
         <Route path="/book/:movieId" element={
             <ProtectedRoute>
-                <Booking />
+              <Booking />
             </ProtectedRoute>
         }/>
          <Route
@@ -83,26 +85,63 @@ function App() {
         />
         <Route path="/payment" element={
             <ProtectedRoute>
-                <Payment />
+              <Payment />
             </ProtectedRoute>
-        }/>
-        <Route path="/success" element={
+          }
+        />
+        <Route
+          path="/success"
+          element={
             <ProtectedRoute>
-                <PaymentSuccess />
+              <PaymentSuccess />
             </ProtectedRoute>
-        }/>
-        <Route path="/orders" element={
+          }
+        />
+
+        <Route
+          path="/orders"
+          element={
             <ProtectedRoute>
-                <OrderHistory />
+              <OrderHistory />
             </ProtectedRoute>
-        }/>
+          }
+        />
+
+        <Route
+          path="/catalog"
+          element={
+            <ProtectedRoute>
+              <Catalog />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/review"
+          element={
+            <ProtectedRoute>
+              <ReviewPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/user-orders"
+          element={
+            <ProtectedRoute>
+              <UserOrders />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Auth pages */}
         <Route path="/login" element={<Login />} />
         <Route path="/logout" element={<Logout />} />
         <Route path="/register" element={<RegisterAndLogout />} />
-        <Route path="*" element={<NotFound />}></Route>
+
+        {/* Catch-all */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   )
 }
 
-export default App
+export default App;
