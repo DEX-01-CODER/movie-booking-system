@@ -15,6 +15,7 @@ const Catalog = () => {
     const [search, setSearch] = useState("");
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedMovie, setSelectedMovie] = useState(null);
+    const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
 
     const navigate = useNavigate();
 
@@ -56,7 +57,7 @@ const Catalog = () => {
           <FilterButtons filter={filter} setFilter={setFilter} />
         </nav>
 
-        {/* Right: search + profile + logout */}
+        {/* Right: search + profile dropdown + logout */}
         <div className="home-right">
           <input
             type="text"
@@ -65,9 +66,62 @@ const Catalog = () => {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
-          <Link to="/profile" className="home-link-btn">
-            Profile
-          </Link>
+          
+          {/* Profile Dropdown */}
+          <div style={{ position: "relative", display: "inline-block" }}>
+            <button 
+              type="button" 
+              className="home-link-btn"
+              onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+            >
+              👤 Account
+            </button>
+            {profileDropdownOpen && (
+              <div style={{
+                position: "absolute",
+                top: "100%",
+                right: 0,
+                backgroundColor: "white",
+                border: "1px solid #ddd",
+                borderRadius: "4px",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                zIndex: 1000,
+                minWidth: "150px",
+                marginTop: "5px"
+              }}>
+                <Link 
+                  to="/profile"
+                  className="home-link-btn"
+                  style={{
+                    display: "block",
+                    padding: "10px 15px",
+                    textDecoration: "none",
+                    color: "#007bff",
+                    borderBottom: "1px solid #eee",
+                    cursor: "pointer"
+                  }}
+                  onClick={() => setProfileDropdownOpen(false)}
+                >
+                  Edit Profile
+                </Link>
+                <Link 
+                  to="/my-orders"
+                  className="home-link-btn"
+                  style={{
+                    display: "block",
+                    padding: "10px 15px",
+                    textDecoration: "none",
+                    color: "#007bff",
+                    cursor: "pointer"
+                  }}
+                  onClick={() => setProfileDropdownOpen(false)}
+                >
+                  My Orders
+                </Link>
+              </div>
+            )}
+          </div>
+
           <button type="button" className="home-link-btn" onClick={handleLogout}>
             Logout
           </button>

@@ -26,8 +26,8 @@ class TheaterAdmin(admin.ModelAdmin):
 
 class ShowSeatInline(admin.TabularInline):
     model = ShowSeat
-    extra = 0
-    readonly_fields = ("seat", "is_booked")  # Admin shouldn't manually change booking state
+    extra = 1
+    fields = ("seat", "is_booked")
 
 
 @admin.register(Show)

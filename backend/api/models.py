@@ -2,6 +2,17 @@ from django.db import models
 from django.contrib.auth.models import User
 import uuid
 
+
+# for the cancellation policy, different percent refund according to time
+# for >= 24 hours, we will refund 100%, for 6 to 24 hrs, we will refund 75%
+# for 1-6 hours before show, 50% and no allow to cancel within 1 hour of show.
+CANCELLATION_POLICY = {
+    'hours_24_plus': 100,      # >= 24 hours
+    'hours_6_24': 75,          # 6-24 hours
+    'hours_1_6': 50,           # 1-6 hours
+    'min_hours_before_show': 1  # 1 hour before show to cancel
+}
+
 class Movie(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=255)
@@ -18,7 +29,7 @@ class Movie(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.title
+        return self.title 
 
 
 class Theater(models.Model):
@@ -86,6 +97,9 @@ class Ticket(models.Model):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='paid')
     booking_time = models.DateTimeField(auto_now_add=True)
     ticket_qr = models.TextField(blank=True)  # QR code string data
+    cancelled_at = models.DateTimeField(null=True, blank=True)  # When ticket was cancelled
+    cancellation_reason = models.CharField(max_length=255, blank=True)  # Reason for cancellation
+    refund_amount = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)  # Amount refunded
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -105,7 +119,7 @@ class TicketSeat(models.Model):
 class Payment(models.Model):
     ticket = models.OneToOneField(Ticket, on_delete=models.CASCADE, related_name="payment")
     amount = models.DecimalField(max_digits=8, decimal_places=2)
-    method = models.CharField(max_length=50)  # e.g. 'card', 'esewa', 'khalti'
+    method = models.CharField(max_length=50)  
     status = models.CharField(max_length=20, default="pending")  # pending/failed/success
     transaction_id = models.CharField(max_length=255, null=True, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)

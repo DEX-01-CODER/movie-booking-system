@@ -6,7 +6,7 @@ from .models import (
 from django.contrib.auth.models import User
 
 
-# User Serializer (merged)
+# User Serializer
 class UserSerializer(serializers.ModelSerializer):
     full_name = serializers.CharField(source="first_name", required=False)
     
@@ -95,13 +95,17 @@ class TicketSerializer(serializers.ModelSerializer):
     seats = TicketSeatSerializer(source="ticket_seats", many=True, read_only=True)
     total_price = serializers.DecimalField(max_digits=8, decimal_places=2, read_only=True)
     status = serializers.CharField(read_only=True)
+    refund_amount = serializers.DecimalField(max_digits=8, decimal_places=2, read_only=True)
+    cancelled_at = serializers.DateTimeField(read_only=True)
+    cancellation_reason = serializers.CharField(read_only=True)
 
     class Meta:
         model = Ticket
         fields = [
             "id", "user", "show", "movie_title", "theater_name",
             "show_time", "seats", "total_price", "status",
-            "booking_time", "ticket_qr", "created_at", "updated_at"
+            "booking_time", "ticket_qr", "created_at", "updated_at",
+            "cancelled_at", "cancellation_reason", "refund_amount"
         ]
         extra_kwargs = {
             "user": {"read_only": True}

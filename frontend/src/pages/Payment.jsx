@@ -28,7 +28,7 @@ function Payment() {
 
     if (!bookingData) return null;
 
-    const { movie, theater, showtime, quantity, totalPrice } = bookingData;
+    const { movie, show, selectedSeats, quantity, totalPrice } = bookingData;
 
     const validateForm = () => {
         let newErrors = {};
@@ -87,11 +87,11 @@ function Payment() {
 
         setLoading(true);
         try {
-            const res = await api.post("/api/bookings/", {
-                movie: movie.id,
-                theater_name: theater,
-                show_time: showtime,
-                quantity: quantity
+            // Create ticket with selected seats
+            const res = await api.post("/api/tickets/", {
+                show: show.id,
+                total_price: totalPrice,
+                seat_ids: selectedSeats  // Array of ShowSeat IDs
             });
 
             if (res.status === 201) {
@@ -100,7 +100,8 @@ function Payment() {
                 alert("Payment failed. Please try again.");
             }
         } catch (error) {
-            alert("Error processing payment: " + error);
+            console.error("Error processing payment:", error);
+            alert("Error processing payment: " + (error.response?.data?.detail || error.message));
         } finally {
             setLoading(false);
         }
@@ -121,8 +122,12 @@ function Payment() {
                     <div className="booking-summary">
                         <h3>Booking Summary</h3>
                         <p><strong>Movie:</strong> {movie.title}</p>
-                        <p><strong>Date/Time:</strong> {new Date(showtime).toLocaleString()}</p>
-                        <p><strong>Theater:</strong> {theater}</p>
+                        <p><strong>Theater:</strong> {show.theater_name}</p>
+                        <p><strong>Date/Time:</strong> {new Date(show.showtime).toLocaleString()}</p>
+                        <p><strong>Seats:</strong> {show.show_seats
+                            .filter(s => selectedSeats.includes(s.id))
+                            .map(s => s.seat_number)
+                            .join(', ')}</p>
                         <p><strong>Ticket Quantity:</strong> {quantity}</p>
                         <p className="total-amount"><strong>Total: ${totalPrice.toFixed(2)}</strong></p>
                     </div>

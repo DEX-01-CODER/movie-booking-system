@@ -52,17 +52,23 @@ function PaymentSuccess() {
             <div className="ticket-card printable" ref={ticketRef}>
                 <div className="ticket-left">
                     <div className="movie-poster-placeholder">
-                        🎬
+                        {movie?.poster_url ? (
+                            <img src={movie.poster_url} alt={movie.title} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+                        ) : (
+                            <span>🎬</span>
+                        )}
                     </div>
                 </div>
 
                 <div className="ticket-details-column">
                     <div className="ticket-info">
-                        <h3>{movie?.title || booking.movie_title}</h3>
-                        <p><strong>Theater:</strong> {booking.theater_name}</p>
-                        <p><strong>Showtime:</strong> {new Date(booking.show_time).toLocaleString()}</p>
-                        <p><strong>Qty:</strong> {booking.quantity}</p>
+                        <h3>{movie?.title || "Movie Title"}</h3>
+                        <p><strong>Theater:</strong> {booking.show?.theater_name || "Theater"}</p>
+                        <p><strong>Showtime:</strong> {booking.show?.showtime ? new Date(booking.show.showtime).toLocaleString() : "N/A"}</p>
+                        <p><strong>Seats:</strong> {booking.ticket_seats?.map(ts => ts.seat.seat_number).join(', ') || "N/A"}</p>
+                        <p><strong>Total Price:</strong> ${booking.total_price || "0.00"}</p>
                         <p><strong>Ticket ID:</strong> MBS-TKT-{booking.id}</p>
+                        <p><strong>Status:</strong> {booking.status}</p>
                     </div>
                     
                     <div className="ticket-qr">
@@ -79,7 +85,7 @@ function PaymentSuccess() {
                 {/* Updated Buttons */}
                 <button className="btn-primary" onClick={handleDownload}>Download Ticket (PDF)</button>
                 <button className="btn-secondary" onClick={handlePrint}>Print Ticket</button>
-                <a onClick={() => navigate("/orders")} className="link-text">Go to Order History</a>
+                <a onClick={() => navigate("/my-orders")} className="link-text">Go to My Orders</a>
                 
                 <button className="btn-home-link" onClick={() => navigate("/")}>
                     Return to Home Page

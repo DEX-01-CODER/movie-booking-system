@@ -29,7 +29,13 @@ const DetailsModal = ({ isOpen, onClose, movie = {} }) => {
                     </p>
 
                     <div className="modal-actions">
-                        <button className="primary-btn">
+
+                        <button
+                            className="primary-btn"
+                            onClick={() => {
+                                window.location.href = `/book/${movie.id}`;
+                            }}
+                        >
                             Book Ticket
                         </button>
 

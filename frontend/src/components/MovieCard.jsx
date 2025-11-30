@@ -23,9 +23,19 @@ export default function MovieCard({ movie, onOpenModal }) {
             </div>
 
             <div className="movie-actions">
-                <button className="primary-btn">
-                    {movie.status === "upcoming" ? "Coming Soon" : "Book Tickets"}
-                </button>
+
+                {movie.status === "upcoming" ? (
+                    <button className="primary-btn" disabled>
+                        Coming Soon
+                    </button>
+                ) : (
+                    <button
+                        className="primary-btn"
+                        onClick={() => window.location.href = `/book/${movie.id}`}
+                    >
+                        Book Tickets
+                    </button>
+                )}
 
                 <button
                     className="secondary-btn"

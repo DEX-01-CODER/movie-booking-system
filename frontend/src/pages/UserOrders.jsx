@@ -9,10 +9,10 @@ export default function UserOrders() {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
-        api.get("api/bookings/")
+        api.get("/api/tickets/")
             .then(res => setOrders(res.data))
             .catch(err => console.error(err));
-    })
+    }, []);
 
     const openModal = (order) => {
         setSelectedOrder(order);
@@ -29,7 +29,7 @@ export default function UserOrders() {
             <h1>
                 Ticket Orders
             </h1>
-            {orders.length ===0 ? (
+            {orders.length === 0 ? (
                 <p>No purchases yet.</p>
             ) : (
                 <div className="orders-list">
@@ -37,17 +37,18 @@ export default function UserOrders() {
                         <div className="order-card" key={order.id}>
                             <img 
                                 className="order-poster"
-                                src={order.movie.poster_url}
-                                alt={order.movie.title}
+                                src={order.show?.movie?.poster_url || order.show?.movie_poster}
+                                alt={order.show?.movie_title || "Movie"}
                             />
 
                             <div className="order-info">
-                                <h2>{order.movie.title}</h2>
-                                <p><strong>Tickets:</strong> {order.tickets}</p>
+                                <h2>{order.show?.movie_title || "Movie"}</h2>
+                                <p><strong>Seats:</strong> {order.ticket_seats?.map(ts => ts.seat.seat_number).join(', ') || "N/A"}</p>
                                 <p>
                                     <strong>Date:</strong> 
-                                    {new Date(order.purchase_date).toLocaleDateString()}
+                                    {order.show?.showtime ? new Date(order.show.showtime).toLocaleDateString() : "N/A"}
                                 </p>
+                                <p><strong>Price:</strong> ${order.total_price}</p>
                             </div>
 
                             <button 

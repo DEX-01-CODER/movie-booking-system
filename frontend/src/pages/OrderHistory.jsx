@@ -12,7 +12,7 @@ function OrderHistory() {
     }, []);
 
     const getOrders = () => {
-        api.get("/api/bookings/")
+        api.get("/api/tickets/")
             .then((res) => {
                 setOrders(res.data);
             })
@@ -23,7 +23,7 @@ function OrderHistory() {
         navigate("/success", { 
             state: { 
                 booking: order,
-                movie: { title: order.movie_title } 
+                movie: { title: order.show?.movie_title || "Movie" } 
             } 
         });
     };
@@ -56,16 +56,16 @@ function OrderHistory() {
                 <tbody>
                     {orders.map((order) => (
                         <tr key={order.id}>
-                            <td>{order.movie_title || "Loading..."}</td>
-                            <td>{new Date(order.show_time).toLocaleString()}</td>
-                            <td>{order.quantity}</td>
+                            <td>{order.show?.movie_title || "Loading..."}</td>
+                            <td>{order.show?.showtime ? new Date(order.show.showtime).toLocaleString() : "N/A"}</td>
+                            <td>{order.ticket_seats?.length || 0}</td>
                             <td>MBS-TKT-{order.id}</td>
                             <td>
                                 <button 
                                     className={`status-btn ${order.status}`}
                                     onClick={() => handleViewTicket(order)}
                                 >
-                                    {order.status === 'unused' ? 'View Ticket' : 'Used'}
+                                    {order.status === 'paid' ? 'View Ticket' : order.status}
                                 </button>
                             </td>
                         </tr>

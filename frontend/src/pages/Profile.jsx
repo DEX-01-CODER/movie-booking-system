@@ -17,9 +17,6 @@ function Profile() {
   const [loading, setLoading] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
 
-  // ---------------------------
-  // Fetch current user profile
-  // ---------------------------
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -28,7 +25,6 @@ function Profile() {
         setProfile({
           fullName: res.data.full_name || "",
           email: res.data.email || "",
-          // This will be empty until you actually add phone_number in backend
           phoneNumber: res.data.phone_number || "",
         });
       } catch (err) {
@@ -82,89 +78,95 @@ function Profile() {
   return (
     <div className="form-page">
       <div className="form-card profile-card">
-        <h2 className="form-title">My Profile</h2>
+        <h2 className="form-title">Edit Profile</h2>
         <p className="form-subtitle">
           View and manage your account information
         </p>
 
-        {/* Full Name */}
-        <label className="form-label">Full Name</label>
-        <input
-          className="form-input"
-          type="text"
-          name="fullName"
-          value={profile.fullName}
-          disabled={!isEditing}
-          onChange={handleChange}
-        />
-
-        {/* Email */}
-        <label className="form-label">
-          Email Address{" "}
-          <span style={{ fontWeight: 400 }}>(cannot be changed)</span>
-        </label>
-        <input
-          className="form-input"
-          type="email"
-          name="email"
-          value={profile.email}
-          disabled
-        />
-
-        {/* Phone Number (will be wired to backend later) */}
-        <label className="form-label">Phone Number</label>
-        <input
-          className="form-input"
-          type="text"
-          name="phoneNumber"
-          value={profile.phoneNumber}
-          disabled={!isEditing}
-          onChange={handleChange}
-        />
-
-        {/* Password field with eye icon (placeholder only) */}
-        <label className="form-label">Password</label>
-        <div className="password-field">
+        {/* ===== USER PROFILE SECTION ===== */}
+        <div className="profile-section">
+          {/* Full Name */}
+          <label className="form-label">Full Name</label>
           <input
             className="form-input"
-            type={showPassword ? "text" : "password"}
-            name="password"
-            value="••••••••••"
-            disabled
-            readOnly
+            type="text"
+            name="fullName"
+            value={profile.fullName}
+            disabled={!isEditing}
+            onChange={handleChange}
           />
+
+          {/* Email */}
+          <label className="form-label">
+            Email Address{" "}
+            <span style={{ fontWeight: 400 }}>(cannot be changed)</span>
+          </label>
+          <input
+            className="form-input"
+            type="email"
+            name="email"
+            value={profile.email}
+            disabled
+          />
+
+          {/* Phone Number */}
+          <label className="form-label">Phone Number</label>
+          <input
+            className="form-input"
+            type="text"
+            name="phoneNumber"
+            value={profile.phoneNumber}
+            disabled={!isEditing}
+            onChange={handleChange}
+          />
+
+          {/* Password field with eye icon (placeholder only) */}
+          <label className="form-label">Password</label>
+          <div className="password-field">
+            <input
+              className="form-input"
+              type={showPassword ? "text" : "password"}
+              name="password"
+              value="••••••••••"
+              disabled
+              readOnly
+            />
+            <button
+              type="button"
+              className="password-toggle"
+              onClick={() => setShowPassword((v) => !v)}
+            >
+              {showPassword ? "🙈" : "👁️"}
+            </button>
+          </div>
+
           <button
             type="button"
-            className="password-toggle"
-            onClick={() => setShowPassword((v) => !v)}
+            className="form-button primary"
+            onClick={handleEditClick}
           >
-            {showPassword ? "🙈" : "👁️"}
+            {isEditing ? "Save Changes" : "Edit Profile"}
           </button>
         </div>
 
-        <button
-          type="button"
-          className="form-button primary"
-          onClick={handleEditClick}
-        >
-          {isEditing ? "Save Changes" : "Edit Profile"}
-        </button>
+        {/* ===== ACTION BUTTONS ===== */}
+        <div style={{ marginTop: "20px", display: "flex", gap: "10px", justifyContent: "center" }}>
+          <button
+            type="button"
+            className="form-button danger"
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
 
-        <button
-          type="button"
-          className="form-button danger"
-          onClick={handleLogout}
-        >
-          Logout
-        </button>
-
-        <button
-          type="button"
-          className="form-link-button"
+          <button
+            type="button"
+            className="form-link-button"
             onClick={() => navigate("/catalog")}
-        >
-          Back to Home
-        </button>
+          >
+            Back to Catalog
+          </button>
+        </div>
       </div>
     </div>
   );

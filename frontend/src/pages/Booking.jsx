@@ -7,42 +7,105 @@ function Booking() {
     const { movieId } = useParams();
     const navigate = useNavigate();
     const [movie, setMovie] = useState(null);
-    const [theater, setTheater] = useState("Lubbock Grand Cinema");
-    const [showtime, setShowtime] = useState("");
-    const [quantity, setQuantity] = useState(1);
+    const [theaters, setTheaters] = useState([]);
+    const [selectedTheater, setSelectedTheater] = useState("");
+    const [shows, setShows] = useState([]);
+    const [selectedShow, setSelectedShow] = useState("");
+    const [availableSeats, setAvailableSeats] = useState([]);
+    const [selectedSeats, setSelectedSeats] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [pricePerTicket, setPricePerTicket] = useState(0);
 
     useEffect(() => {
-        api.get("/api/movies/")
+        // Fetch movie details
+        api.get(`/api/movies/${movieId}/`)
             .then((res) => {
-                const foundMovie = res.data.find(m => m.id.toString() === movieId);
-                if (foundMovie) {
-                    setMovie(foundMovie);
-                } else {
-                    alert("Movie not found");
-                    navigate("/");
-                }
+                setMovie(res.data);
             })
-            .catch((err) => alert("Error loading movie: " + err))
+            .catch((err) => {
+                alert("Error loading movie: " + err);
+                navigate("/");
+            })
             .finally(() => setLoading(false));
     }, [movieId, navigate]);
+
+    useEffect(() => {
+        // Fetch all theaters
+        if (movie) {
+            api.get("/api/theaters/")
+                .then((res) => {
+                    setTheaters(res.data);
+                    if (res.data.length > 0) {
+                        setSelectedTheater(res.data[0].id);
+                    }
+                })
+                .catch((err) => console.error("Error loading theaters:", err));
+        }
+    }, [movie]);
+
+    useEffect(() => {
+        // Fetch shows for the selected movie and theater
+        if (movie && selectedTheater) {
+            api.get("/api/shows/", {
+                params: {
+                    movie: movieId,
+                    theater: selectedTheater,
+                },
+            })
+                .then((res) => {
+                    setShows(res.data);
+                    setSelectedShow("");
+                    setAvailableSeats([]);
+                    setSelectedSeats([]);
+                })
+                .catch((err) => console.error("Error loading shows:", err));
+        }
+    }, [movie, selectedTheater, movieId]);
+
+    useEffect(() => {
+        // When a show is selected, load its available seats
+        if (selectedShow) {
+            const show = shows.find(s => s.id === selectedShow);
+            if (show) {
+                // Filter for available seats (is_booked = false)
+                const available = show.show_seats.filter(ss => !ss.is_booked);
+                setAvailableSeats(available);
+                setPricePerTicket(parseFloat(show.price));
+                setSelectedSeats([]);
+            }
+        }
+    }, [selectedShow, shows]);
+
+    const toggleSeatSelection = (seatId) => {
+        setSelectedSeats((prev) =>
+            prev.includes(seatId)
+                ? prev.filter(id => id !== seatId)
+                : [...prev, seatId]
+        );
+    };
 
     if (loading) return <div>Loading...</div>;
     if (!movie) return <div>Movie not found</div>;
 
-    const pricePerTicket = movie.price_per_ticket || 12.50;
-    const totalPrice = pricePerTicket * quantity;
+    const totalPrice = pricePerTicket * selectedSeats.length;
+    const quantity = selectedSeats.length;
 
     const handleProceed = () => {
-        if (!showtime) {
-            alert("Please select a showtime");
+        if (!selectedShow) {
+            alert("Please select a show");
             return;
         }
+        if (selectedSeats.length === 0) {
+            alert("Please select at least one seat");
+            return;
+        }
+        
+        const selectedShowData = shows.find(s => s.id === selectedShow);
         navigate("/payment", { 
             state: { 
                 movie, 
-                theater, 
-                showtime, 
+                show: selectedShowData,
+                selectedSeats, 
                 quantity, 
                 totalPrice 
             } 
@@ -55,56 +118,109 @@ function Booking() {
             <h1 className="page-header">
                 <span onClick={() => navigate("/")} style={{cursor: "pointer"}} title="Go to Home">
                     Movie Booking System (MBS)
-                </span> 
-                <span className="profile-icon">👤 Profile</span>
+                </span>
             </h1>
             
             <div className="booking-content">
                 <div className="booking-form">
+                    <h2>{movie.title}</h2>
+                    
+                    {/* Theater Selection */}
                     <div className="form-group">
                         <label>Select Theater</label>
-                        <select value={theater} onChange={(e) => setTheater(e.target.value)}>
-                            <option value="Lubbock Grand Cinema">Lubbock</option>
-                            <option value="Amarillo Star">Amarillo</option>
-                            <option value="Levelland Loft">Levelland</option>
-                            <option value="Plainview Palace">Plainview</option>
-                            <option value="Snyder Cinema">Snyder</option>
-                            <option value="Abilene Alley">Abilene</option>
-                        </select>
-                    </div>
-
-                    <div className="form-group">
-                        <label>Select Showtime</label>
-                        <select value={showtime} onChange={(e) => setShowtime(e.target.value)}>
-                            <option value="">Choose time...</option>
-                            <option value="2025-10-26T10:00:00">10:00 AM</option>
-                            <option value="2025-10-26T13:00:00">1:00 PM</option>
-                            <option value="2025-10-26T19:00:00">7:00 PM</option>
-                        </select>
-                    </div>
-
-                    <div className="form-group">
-                        <label>Select Ticket Quantity (Max 10)</label>
-                        <div className="quantity-selector">
-                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(num => (
-                                <button 
-                                    key={num} 
-                                    className={quantity === num ? "qty-btn selected" : "qty-btn"}
-                                    onClick={() => setQuantity(num)}
-                                >
-                                    {num}
-                                </button>
+                        <select 
+                            value={selectedTheater} 
+                            onChange={(e) => setSelectedTheater(e.target.value)}
+                        >
+                            <option value="">Choose theater...</option>
+                            {theaters.map(theater => (
+                                <option key={theater.id} value={theater.id}>
+                                    {theater.name} - {theater.address}
+                                </option>
                             ))}
-                        </div>
+                        </select>
                     </div>
+
+                    {/* Show Selection */}
+                    {selectedTheater && shows.length > 0 ? (
+                        <div className="form-group">
+                            <label>Select Show</label>
+                            <select 
+                                value={selectedShow} 
+                                onChange={(e) => setSelectedShow(e.target.value)}
+                            >
+                                <option value="">Choose show...</option>
+                                {shows.map(show => (
+                                    <option key={show.id} value={show.id}>
+                                        {new Date(show.showtime).toLocaleString([], {
+                                            year: 'numeric', 
+                                            month: 'short', 
+                                            day: 'numeric', 
+                                            hour: '2-digit', 
+                                            minute: '2-digit'
+                                        })} - ${show.price}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    ) : selectedTheater ? (
+                        <p className="no-shows">No shows available for this theater</p>
+                    ) : null}
+
+                    {/* Seat Selection */}
+                    {selectedShow && availableSeats.length > 0 ? (
+                        <div className="form-group">
+                            <label>Select Seats</label>
+                            <div className="seats-grid">
+                                {availableSeats.map(seatInfo => (
+                                    <button
+                                        key={seatInfo.id}
+                                        className={`seat ${selectedSeats.includes(seatInfo.id) ? 'selected' : ''} ${seatInfo.seat_type}`}
+                                        onClick={() => toggleSeatSelection(seatInfo.id)}
+                                        type="button"
+                                    >
+                                        {seatInfo.seat_number}
+                                    </button>
+                                ))}
+                            </div>
+                            <p className="seat-legend">
+                                <span>Seat Type: {availableSeats[0]?.seat_type === 'VIP' ? 'VIP' : 'Regular'}</span>
+                            </p>
+                        </div>
+                    ) : selectedShow ? (
+                        <p className="no-seats">All seats for this show are booked</p>
+                    ) : null}
                 </div>
 
                 <div className="order-summary">
                     <h3>Order Summary</h3>
                     <h2>{movie.title}</h2>
                     <div className="summary-details">
-                        <p>Date/Time: {showtime ? new Date(showtime).toLocaleString([], {year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute:'2-digit'}) : "Select a time"}</p>
-                        <p>Price per Ticket: ${parseFloat(pricePerTicket).toFixed(2)}</p>
+                        {selectedShow && shows.find(s => s.id === selectedShow) && (
+                            <>
+                                <p>
+                                    Show: {new Date(shows.find(s => s.id === selectedShow).showtime).toLocaleString([], {
+                                        year: 'numeric', 
+                                        month: 'long', 
+                                        day: 'numeric', 
+                                        hour: '2-digit', 
+                                        minute: '2-digit'
+                                    })}
+                                </p>
+                                <p>Theater: {theaters.find(t => t.id === selectedTheater)?.name}</p>
+                            </>
+                        )}
+                        {selectedSeats.length > 0 && (
+                            <p>Seats: {availableSeats
+                                .filter(s => selectedSeats.includes(s.id))
+                                .map(s => s.seat_number)
+                                .join(', ')}
+                            </p>
+                        )}
+                        <p>Price per Ticket: ${pricePerTicket.toFixed(2)}</p>
+                    </div>
+                    <div className="total-row">
+                        <span>Tickets: {quantity}</span>
                     </div>
                     <div className="total-row">
                         <span>Total:</span>
@@ -114,9 +230,14 @@ function Booking() {
             </div>
 
             <div className="actions">
-                <button className="btn-primary" onClick={handleProceed}>Proceed to Payment</button>
+                <button 
+                    className="btn-primary" 
+                    onClick={handleProceed}
+                    disabled={!selectedShow || selectedSeats.length === 0}
+                >
+                    Proceed to Payment
+                </button>
                 
-                {/* EXPLICIT HOME BUTTON via Cancel */}
                 <button className="btn-secondary" onClick={() => navigate("/")}>Cancel & Go Home</button>
             </div>
         </div>
