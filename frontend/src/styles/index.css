@@ -1,0 +1,40 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #020617;
+}
+
+/* Base typography + background */
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: #e5e7eb;          /* light gray text */
+  background-color: #020617; /* dark navy background for the whole app */
+}
+
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+
+a:hover {
+  text-decoration: underline;
+}
+
+
+button {
+  font-family: inherit;
+  font-size: 1rem;
+  cursor: pointer;
+}

@@ -1,0 +1,6 @@
+
+/* root is the main container that holds all react components */
+#root {
+  width: 100%; /* take up full width of screen */
+  min-height: 100vh; /* minimum height is full viewport (screen) height */
+}
