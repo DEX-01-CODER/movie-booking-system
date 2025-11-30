@@ -3,12 +3,9 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import LandingPage from "./pages/LandingPage.jsx";
 import Profile from "./pages/Profile.jsx";
-
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
-import Home from "./pages/Home.jsx";
 import NotFound from "./pages/NotFound.jsx";
-
 import Booking from "./pages/Booking.jsx";
 import Payment from "./pages/Payment.jsx";
 import PaymentSuccess from "./pages/PaymentSuccess.jsx";
@@ -21,28 +18,27 @@ import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 // Logout component clears local storage and redirects
 function Logout() {
-  localStorage.clear()
-  return <Navigate to="/login" />
+  localStorage.clear();
+  return <Navigate to="/login" />;
 }
 
 // Clear tokens before registering
 function RegisterAndLogout() {
-  localStorage.clear()
-  return <Register />
+  localStorage.clear();
+  return <Register />;
 }
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <Home />
-            </ProtectedRoute>
-          }
-        />
+        {/* Public routes */}
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/logout" element={<Logout />} />
+        <Route path="/register" element={<RegisterAndLogout />} />
+
+        {/* Protected routes */}
         <Route
           path="/catalog"
           element={
@@ -51,9 +47,8 @@ function App() {
             </ProtectedRoute>
           }
         />
-
         <Route
-          path="/review"
+          path="/review/:movieId"
           element={
             <ProtectedRoute>
               <ReviewPage />
@@ -69,13 +64,15 @@ function App() {
             </ProtectedRoute>
           }
         />
-
-        <Route path="/book/:movieId" element={
+        <Route
+          path="/book/:movieId"
+          element={
             <ProtectedRoute>
               <Booking />
             </ProtectedRoute>
-        }/>
-         <Route
+          }
+        />
+        <Route
           path="/profile"
           element={
             <ProtectedRoute>
@@ -83,7 +80,9 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="/payment" element={
+        <Route
+          path="/payment"
+          element={
             <ProtectedRoute>
               <Payment />
             </ProtectedRoute>
@@ -97,7 +96,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/orders"
           element={
@@ -107,41 +105,11 @@ function App() {
           }
         />
 
-        <Route
-          path="/catalog"
-          element={
-            <ProtectedRoute>
-              <Catalog />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/review"
-          element={
-            <ProtectedRoute>
-              <ReviewPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/user-orders"
-          element={
-            <ProtectedRoute>
-              <UserOrders />
-            </ProtectedRoute>
-          }
-        />
-
-        {/* Auth pages */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/logout" element={<Logout />} />
-        <Route path="/register" element={<RegisterAndLogout />} />
-
         {/* Catch-all */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
-  )
+  );
 }
 
 export default App;

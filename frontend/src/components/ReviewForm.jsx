@@ -17,7 +17,7 @@ export default function ReviewForm({addReview}) {
     return (
         <form onSubmit={handleSubmit}>
             <input type="text" placeholder="Your Name" value={name} onChange={(e)=>setName(e.target.value)}/>
-            <input type="number" min="1" max="5" value={rating} onChange={(e)=>setRating(e.target.value)}/>
+            <input type="number" min="1" max="10" value={rating} onChange={(e)=>setRating(e.target.value)}/>
             <textarea placeholder="Your Review" value={comment} onChange={(e)=>setComment(e.target.value)}></textarea>
             <button type="submit">
                 Submit Review

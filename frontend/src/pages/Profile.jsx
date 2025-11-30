@@ -161,7 +161,7 @@ function Profile() {
         <button
           type="button"
           className="form-link-button"
-          onClick={handleBackHome}
+            onClick={() => navigate("/catalog")}
         >
           Back to Home
         </button>

@@ -32,7 +32,7 @@ function Login() {
       localStorage.setItem(REFRESH_TOKEN_KEY, res.data.refresh);
       localStorage.setItem(USERNAME_KEY, email);
 
-      navigate("/home");
+      navigate("/catalog");
     } catch (err) {
       console.error(err);
       setError("Invalid email or password.");

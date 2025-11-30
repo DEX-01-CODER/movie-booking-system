@@ -25,7 +25,7 @@ const DetailsModal = ({ isOpen, onClose, movie = {} }) => {
                     </p>
 
                     <p className="modal-desc">
-                        {movie.synopsis || "No description available"}
+                        {movie.description || "No description available"}
                     </p>
 
                     <div className="modal-actions">
@@ -34,7 +34,7 @@ const DetailsModal = ({ isOpen, onClose, movie = {} }) => {
                         </button>
 
                         <Link 
-                            to={`/reviews/${movie.id}`} 
+                            to={`/review/${movie.id}`} 
                             className="secondary-btn"
                         >
                             View Reviews

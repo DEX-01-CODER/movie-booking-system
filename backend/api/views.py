@@ -97,9 +97,15 @@ class TicketViewSet(viewsets.ModelViewSet):
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
-    queryset = Review.objects.select_related("movie", "user").all()
     serializer_class = ReviewSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = Review.objects.select_related("movie", "user").all()
+        movie_id = self.request.query_params.get("movie")
+        if movie_id:
+            queryset = queryset.filter(movie_id=movie_id)
+        return queryset
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)

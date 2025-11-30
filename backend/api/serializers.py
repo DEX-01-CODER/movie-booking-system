@@ -3,13 +3,10 @@ from .models import (
     Movie, Show, Theater, Seat, ShowSeat,
     Ticket, TicketSeat, Payment, Review
 )
+from django.contrib.auth.models import User
 
 
-
-
-# ---------------------------
 # User Serializer (merged)
-# ---------------------------
 class UserSerializer(serializers.ModelSerializer):
     full_name = serializers.CharField(source="first_name", required=False)
     
@@ -123,6 +120,7 @@ class PaymentSerializer(serializers.ModelSerializer):
 class ReviewSerializer(serializers.ModelSerializer):
     movie_title = serializers.ReadOnlyField(source="movie.title")
     username = serializers.ReadOnlyField(source="user.username")
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = Review
