@@ -1,0 +1,47 @@
+.order-container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+.order-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.order-card {
+    display: flex;
+    align-items: center;
+    background: white;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+}
+
+.order-poster {
+    width: 110px;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.order-info {
+    margin-left: 20px;
+    flex: 1;
+}
+
+.status-btn {
+    background: whitesmoke;
+    border: none;
+    padding: 10px 15px;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+    font-size: 15px;
+}
+
+.status-btn:hover {
+    background: gainsboro;
+}
