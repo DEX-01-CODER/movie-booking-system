@@ -1,16 +1,15 @@
 from django.contrib.auth.models import User
-from rest_framework import generics
-from rest_framework.permissions import (
-    AllowAny,
-    IsAuthenticated,
-    IsAuthenticatedOrReadOnly,
-    IsAdminUser,
+from rest_framework import viewsets, generics
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.exceptions import ValidationError
+
+from .permissions import IsAdmin, IsAdminOrReadOnly, IsOrderOwner
+from .serializers import (
+    UserSerializer, MovieSerializer, ShowSerializer,
+    TheaterSerializer, TicketSerializer, ReviewSerializer
 )
-from .serializers import UserSerializer, MovieSerializer, BookingSerializer
-from .models import Movie, Booking
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+
+from .models import Movie, Show, Theater, Ticket, Review
 
 
 class CreateUserView(generics.CreateAPIView):
@@ -19,47 +18,60 @@ class CreateUserView(generics.CreateAPIView):
     permission_classes = [AllowAny]
 
 
-class MovieListCreate(generics.ListCreateAPIView):
+class MovieViewSet(viewsets.ModelViewSet):
     queryset = Movie.objects.all()
     serializer_class = MovieSerializer
+    permission_classes = [IsAdminOrReadOnly]
 
-    def get_permissions(self):
-        # Anyone can view movies
-        if self.request.method == "GET":
-            return [IsAuthenticatedOrReadOnly()]
-        # Only admins can add new movies
-        return [IsAdminUser()]
+class TheaterViewSet(viewsets.ModelViewSet):
+    queryset = Theater.objects.all()
+    serializer_class = TheaterSerializer
+    permission_classes = [IsAdmin]
 
 
-class BookingListCreate(generics.ListCreateAPIView):
-    serializer_class = BookingSerializer
+class ShowViewSet(viewsets.ModelViewSet):
+    queryset = Show.objects.select_related("movie", "theater").all()
+    serializer_class = ShowSerializer
+    permission_classes = [IsAdminOrReadOnly]
+
+
+class TicketViewSet(viewsets.ModelViewSet):
+    queryset = Ticket.objects.select_related("user", "show").all()
+    serializer_class = TicketSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return (
-            Booking.objects
-            .filter(user=self.request.user)
-            .select_related("movie")
+        user = self.request.user
+        if user.is_staff:
+            return Ticket.objects.all()
+        return Ticket.objects.filter(user=user)
+
+    def perform_create(self, serializer):
+        show = serializer.validated_data.get("show")
+        quantity = serializer.validated_data.get("quantity")
+
+        if not show:
+            raise ValidationError("Show is required for ticket booking.")
+
+        # price comes from SHOW, not Movie
+        price = show.price
+        total = price * quantity
+
+        serializer.save(
+            user=self.request.user,
+            total_price=total
         )
+
+    def get_permissions(self):
+        if self.action in ["destroy", "update", "partial_update"]:
+            return [IsOrderOwner()]
+        return super().get_permissions()
+
+
+class ReviewViewSet(viewsets.ModelViewSet):
+    queryset = Review.objects.select_related("movie", "user").all()
+    serializer_class = ReviewSerializer
+    permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
-
-
-class BookingDelete(generics.DestroyAPIView):
-    serializer_class = BookingSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        # Limit to current user for safety
-        return Booking.objects.filter(user=self.request.user)
-
-
-class MeView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        serializer = UserSerializer(request.user)
-        return Response(serializer.data)
-
-
