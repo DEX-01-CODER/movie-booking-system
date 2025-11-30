@@ -1,11 +1,41 @@
-from django.urls import path
-from . import views
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+
+from .views import (
+    MovieViewSet, ShowViewSet, TheaterViewSet,
+    TicketViewSet, ReviewViewSet,
+    CreateUserView, MeView
+)
+
+
+router = DefaultRouter()
+router.register(r"movies", MovieViewSet, basename="movies")
+router.register(r"shows", ShowViewSet, basename="shows")
+router.register(r"theaters", TheaterViewSet, basename="theaters")
+router.register(r"tickets", TicketViewSet, basename="tickets")
+router.register(r"reviews", ReviewViewSet, basename="reviews")
+
+# Backward-compatible ticket endpoints
+booking_list = TicketViewSet.as_view({
+    "get": "list",
+    "post": "create",
+})
+
+booking_delete = TicketViewSet.as_view({
+    "delete": "destroy",
+})
+
+
 
 urlpatterns = [
-    # Movies
-    path("movies/", views.MovieListCreate.as_view(), name="movie-list"),
+    # User
+    path("user/register/", CreateUserView.as_view(), name="register"),
+    path("user/me/", MeView.as_view(), name="me"),
 
-    # Bookings
-    path("bookings/", views.BookingListCreate.as_view(), name="booking-list"),
-    path("bookings/delete/<int:pk>/", views.BookingDelete.as_view(), name="delete-booking"),
+    # router routes
+    path("", include(router.urls)),
+
+    # Backward compatibility for ticket endpoints
+    path("bookings/", booking_list, name="booking-list"),
+    path("bookings/delete/<uuid:pk>/", booking_delete, name="delete-booking"),
 ]

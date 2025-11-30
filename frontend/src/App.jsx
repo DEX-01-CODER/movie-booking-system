@@ -1,14 +1,23 @@
-import react from "react"
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
-import Login from "./pages/Login"
-import Register from "./pages/Register"
-import Home from "./pages/Home"
-import Booking from "./pages/Booking"
-import Payment from "./pages/Payment"
-import PaymentSuccess from "./pages/PaymentSuccess"
-import OrderHistory from "./pages/OrderHistory"
-import NotFound from "./pages/NotFound"
-import ProtectedRoute from "./components/ProtectedRoute"
+import React from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+
+import LandingPage from "./pages/LandingPage.jsx";
+import Profile from "./pages/Profile.jsx";
+
+import Login from "./pages/Login.jsx";
+import Register from "./pages/Register.jsx";
+import Home from "./pages/Home.jsx";
+import NotFound from "./pages/NotFound.jsx";
+
+import Booking from "./pages/Booking.jsx";
+import Payment from "./pages/Payment.jsx";
+import PaymentSuccess from "./pages/PaymentSuccess.jsx";
+import OrderHistory from "./pages/OrderHistory.jsx";
+import Catalog from "./pages/Catalog.jsx";
+import ReviewPage from "./pages/ReviewPage.jsx";
+import UserOrders from "./pages/UserOrders.jsx";
+
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 function Logout() {
   localStorage.clear()
@@ -32,11 +41,46 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/catalog"
+          element={
+            <ProtectedRoute>
+              <Catalog />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/review"
+          element={
+            <ProtectedRoute>
+              <ReviewPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/user-orders"
+          element={
+            <ProtectedRoute>
+              <UserOrders />
+            </ProtectedRoute>
+          }
+        />
+
         <Route path="/book/:movieId" element={
             <ProtectedRoute>
                 <Booking />
             </ProtectedRoute>
         }/>
+         <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/payment" element={
             <ProtectedRoute>
                 <Payment />

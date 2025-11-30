@@ -1,33 +1,126 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Movie, Booking
+from .models import (
+    Movie, Show, Theater, Seat, ShowSeat,
+    Ticket, TicketSeat, Payment, Review
+)
+
+
 
 class UserSerializer(serializers.ModelSerializer):
+    full_name = serializers.CharField(source="first_name", required=False)
+    
     class Meta:
         model = User
-        fields = ["id", "username", "password"]
-        extra_kwargs = {"password": {"write_only": True}}
+        fields = ["id", "username", "email", "full_name", "password"]
+        extra_kwargs = {
+            "password": {"write_only": True, "min_length": 6}
+        }
 
     def create(self, validated_data):
-        user = User.objects.create_user(**validated_data)
+        password = validated_data.pop("password")
+        user = User(**validated_data)
+        user.set_password(password)
+        user.save()
         return user
 
+
+
 class MovieSerializer(serializers.ModelSerializer):
+    description = serializers.CharField(source="synopsis")
+
     class Meta:
         model = Movie
-        fields = ["id", "title", "description", "release_date", "price_per_ticket"]
+        fields = [
+            "id", "title", "description", "cast", "genre",
+            "runtime_minutes", "release_date", "rating",
+            "poster_url", "trailer_url", "is_current",
+            "created_at", "updated_at"
+        ]
 
-class BookingSerializer(serializers.ModelSerializer):
-    movie_title = serializers.ReadOnlyField(source='movie.title') # Helper for Order History
+
+
+class SeatSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Seat
+        fields = ["id", "seat_number", "seat_type"]
+
+
+class TheaterSerializer(serializers.ModelSerializer):
+    seats = SeatSerializer(many=True, read_only=True)
 
     class Meta:
-        model = Booking
+        model = Theater
+        fields = ["id", "name", "address", "total_seats", "seats"]
+
+
+
+class ShowSeatSerializer(serializers.ModelSerializer):
+    seat_number = serializers.CharField(source="seat.seat_number", read_only=True)
+    seat_type = serializers.CharField(source="seat.seat_type", read_only=True)
+
+    class Meta:
+        model = ShowSeat
+        fields = ["id", "seat_number", "seat_type", "is_booked"]
+
+
+class ShowSerializer(serializers.ModelSerializer):
+    movie_title = serializers.ReadOnlyField(source="movie.title")
+    theater_name = serializers.ReadOnlyField(source="theater.name")
+    show_seats = ShowSeatSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Show
         fields = [
-            "id", "user", "movie", "movie_title", "theater_name", 
-            "show_time", "quantity", "total_price", "status", "booked_at"
+            "id", "movie", "movie_title", "theater", "theater_name",
+            "showtime", "price", "is_active", "created_at", "updated_at",
+            "show_seats"
+        ]
+
+
+
+class TicketSeatSerializer(serializers.ModelSerializer):
+    seat_number = serializers.CharField(source="seat.seat_number", read_only=True)
+    seat_type = serializers.CharField(source="seat.seat_type", read_only=True)
+
+    class Meta:
+        model = TicketSeat
+        fields = ["id", "seat_number", "seat_type"]
+
+
+class TicketSerializer(serializers.ModelSerializer):
+    movie_title = serializers.CharField(source="show.movie.title", read_only=True)
+    theater_name = serializers.CharField(source="show.theater.name", read_only=True)
+    show_time = serializers.DateTimeField(source="show.showtime", read_only=True)
+    seats = TicketSeatSerializer(source="ticket_seats", many=True, read_only=True)
+    total_price = serializers.DecimalField(max_digits=8, decimal_places=2, read_only=True)
+    status = serializers.CharField(read_only=True)
+
+    class Meta:
+        model = Ticket
+        fields = [
+            "id", "user", "show", "movie_title", "theater_name",
+            "show_time", "seats", "total_price", "status",
+            "booking_time", "ticket_qr", "created_at", "updated_at"
         ]
         extra_kwargs = {
-            "user": {"read_only": True},
-            "status": {"read_only": True},
-            "total_price": {"read_only": True} # We will calculate this on the backend
+            "user": {"read_only": True}
         }
+
+
+
+class PaymentSerializer(serializers.ModelSerializer):
+    ticket_id = serializers.CharField(source="ticket.id", read_only=True)
+
+    class Meta:
+        model = Payment
+        fields = ["id", "ticket", "ticket_id", "amount", "method", "status", "transaction_id", "timestamp"]
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    movie_title = serializers.ReadOnlyField(source="movie.title")
+    username = serializers.ReadOnlyField(source="user.username")
+
+    class Meta:
+        model = Review
+        fields = "__all__"
