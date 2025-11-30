@@ -83,20 +83,24 @@ class TicketViewSet(viewsets.ModelViewSet):
 
     @transaction.atomic
     def perform_create(self, serializer):
-        # Expected seat_ids in request data: list of seat IDs to book.
+        # Expected seat_ids in request data: list of ShowSeat IDs to book.
         show = serializer.validated_data.get("show")
-        seat_ids = self.request.data.get("seat_ids", [])
+        showseat_ids = self.request.data.get("seat_ids", [])
 
-        if not show or not seat_ids:
+        if not show or not showseat_ids:
             raise ValidationError("Show and seat_ids are required for ticket booking.")
 
-        # Fetch ShowSeats
-        show_seats = ShowSeat.objects.select_for_update().filter(show=show, seat_id__in=seat_ids, is_booked=False)
+        # Fetch ShowSeats by their IDs (not Seat IDs)
+        show_seats = ShowSeat.objects.select_for_update().filter(
+            id__in=showseat_ids, 
+            show=show, 
+            is_booked=False
+        )
 
-        if show_seats.count() != len(seat_ids):
-            raise ValidationError("Some selected seats are already booked. Please choose other seats.")
+        if show_seats.count() != len(showseat_ids):
+            raise ValidationError("Some selected seats are already booked or invalid. Please choose other seats.")
 
-        total_price = show.price * len(seat_ids)
+        total_price = show.price * len(showseat_ids)
 
         # Create ticket
         ticket = serializer.save(user=self.request.user, total_price=total_price)
