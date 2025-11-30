@@ -1,120 +1,187 @@
-import { useState, useEffect } from "react";
-import api from "../api";
-import "../styles/Home.css"
+// import react library
+import React from "react";
+// import Link + navigation helper
+import { Link, useNavigate } from "react-router-dom";
+// page styles
+import "../styles/Home.css";
+// token keys so we can clear them on logout
+import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from "../constants";
 
+// main home page component (shown after user logs in)
 function Home() {
-    const [movies, setMovies] = useState([]);
-    const [bookings, setBookings] = useState([]);
-    const [selectedMovie, setSelectedMovie] = useState("");
-    const [seats, setSeats] = useState("");
+  const navigate = useNavigate();
 
-    useEffect(() => {
-        getMovies();
-        getBookings();
-    }, []);
+  // handle logout: clear tokens + redirect to login
+  const handleLogout = () => {
+    localStorage.removeItem(ACCESS_TOKEN_KEY);
+    localStorage.removeItem(REFRESH_TOKEN_KEY);
+    navigate("/login", { replace: true });
+  };
 
-    const getMovies = () => {
-        api
-            .get("/api/movies/")
-            .then((res) => res.data)
-            .then((data) => {
-                setMovies(data);
-                console.log("Movies:", data);
-            })
-            .catch((err) => alert(err));
-    };
+  return (
+    <div className="home-page">
+      {/* ===== Top header bar ===== */}
+      <header className="home-header">
+        {/* Left: logo */}
+        <div className="home-logo">MBS</div>
 
-    const getBookings = () => {
-        api
-            .get("/api/bookings/")
-            .then((res) => res.data)
-            .then((data) => {
-                setBookings(data);
-                console.log("Bookings:", data);
-            })
-            .catch((err) => alert(err));
-    };
+        {/* Center: nav tabs (current / upcoming) */}
+        <nav className="home-nav">
+          <button className="home-nav-link home-nav-link--active">
+            Current Movies
+          </button>
+          <button className="home-nav-link">Upcoming Movies</button>
+        </nav>
 
-    const createBooking = (e) => {
-        e.preventDefault();
-        api
-            .post("/api/bookings/", { movie: selectedMovie, seats })
-            .then((res) => {
-                if (res.status === 201) alert("Booking created!");
-                else alert("Failed to create booking.");
-                getBookings();
-            })
-            .catch((err) => alert(err));
-    };
-
-    const deleteBooking = (id) => {
-        api
-            .delete(`/api/bookings/delete/${id}/`)
-            .then((res) => {
-                if (res.status === 204) alert("Booking deleted!");
-                else alert("Failed to delete booking.");
-                getBookings();
-            })
-            .catch((err) => alert(err));
-    };
-
-    return (
-        <div className="home-container">
-            <h2>Available Movies</h2>
-            <ul className="movie-list">
-                {movies.map((movie) => (
-                    <li key={movie.id} className="movie-item">
-                        {movie.title} – {movie.release_date}
-                    </li>
-                ))}
-            </ul>
-
-            <h2>Your Bookings</h2>
-            <ul className="booking-list">
-                {bookings.map((booking) => (
-                    <li key={booking.id} className="booking-item">
-                        <span>
-                            Movie ID: {booking.movie}, Seats: {booking.seats}
-                        </span>
-                        <button
-                            className="delete-btn"
-                            onClick={() => deleteBooking(booking.id)}
-                        >
-                            Delete
-                        </button>
-                    </li>
-                ))}
-            </ul>
-
-            <h2>Create Booking</h2>
-            <form onSubmit={createBooking}>
-                <label>Movie:</label>
-                <select
-                    value={selectedMovie}
-                    onChange={(e) => setSelectedMovie(e.target.value)}
-                    required
-                >
-                    <option value="">Select a movie</option>
-                    {movies.map((movie) => (
-                        <option key={movie.id} value={movie.id}>
-                            {movie.title}
-                        </option>
-                    ))}
-                </select>
-
-                <label>Seats (e.g. A1,A2):</label>
-                <input
-                    type="text"
-                    value={seats}
-                    onChange={(e) => setSeats(e.target.value)}
-                    required
-                />
-
-                <button type="submit">Book</button>
-            </form>
+        {/* Right: search + profile + logout */}
+        <div className="home-right">
+          <input
+            type="text"
+            className="home-search"
+            placeholder="Search for movies..."
+          />
+          <Link to="/profile" className="home-link-btn">
+            Profile
+          </Link>
+          <button
+            type="button"
+            className="home-link-btn"
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
         </div>
-    );
+      </header>
 
+      {/* ===== Main content ===== */}
+      <main className="home-content">
+        <section className="home-section">
+          <h2 className="home-section-title">Featured Movies</h2>
+
+          <div className="home-movie-grid">
+            {/* Card 1 */}
+            <div className="movie-card">
+              <img
+                src="/posters/avatar-fire-and-ash.jpg"
+                alt="Avatar: Fire and Ash"
+                className="movie-poster"
+              />
+              <div className="movie-title">Avatar: Fire and Ash</div>
+              <button className="home-card-button">View Details</button>
+            </div>
+
+            {/* Card 2 */}
+            <div className="movie-card">
+              <img
+                src="/posters/wicked-for-good.jpg"
+                alt="Wicked: For Good"
+                className="movie-poster"
+              />
+              <div className="movie-title">Wicked: For Good</div>
+              <button className="home-card-button">View Details</button>
+            </div>
+
+            {/* Card 3 */}
+            <div className="movie-card">
+              <img
+                src="/posters/now-you-see-me.jpg"
+                alt="Now You See Me: Now You Don't"
+                className="movie-poster"
+              />
+              <div className="movie-title">
+                Now You See Me: Now You Don't
+              </div>
+              <button className="home-card-button">View Details</button>
+            </div>
+
+            {/* Card 4 */}
+            <div className="movie-card">
+              <img
+                src="/posters/running-man.jpg"
+                alt="The Running Man"
+                className="movie-poster"
+              />
+              <div className="movie-title">The Running Man</div>
+              <button className="home-card-button">View Details</button>
+            </div>
+
+            {/* Card 5 */}
+            <div className="movie-card">
+              <img
+                src="/posters/zootopia-2.jpg"
+                alt="Zootopia 2"
+                className="movie-poster"
+              />
+              <div className="movie-title">Zootopia 2</div>
+              <button className="home-card-button">View Details</button>
+            </div>
+
+            {/* Card 6 */}
+            <div className="movie-card">
+              <img
+                src="/posters/fnaf-2.jpg"
+                alt="Five Nights at Freddy's 2"
+                className="movie-poster"
+              />
+              <div className="movie-title">
+                Five Nights at Freddy&apos;s 2
+              </div>
+              <button className="home-card-button">View Details</button>
+            </div>
+
+            {/* Card 7 */}
+            <div className="movie-card">
+              <img
+                src="/posters/predator-badlands.jpg"
+                alt="Predator: Badlands"
+                className="movie-poster"
+              />
+              <div className="movie-title">Predator: Badlands</div>
+              <button className="home-card-button">View Details</button>
+            </div>
+
+            {/* Card 8 */}
+            <div className="movie-card">
+              <img
+                src="/posters/sisu-2.jpg"
+                alt="Sisu: Road to Revenge"
+                className="movie-poster"
+              />
+              <div className="movie-title">Sisu: Road to Revenge</div>
+              <button className="home-card-button">View Details</button>
+            </div>
+
+            {/* Card 9 */}
+            <div className="movie-card">
+              <img
+                src="/posters/eternity.jpg"
+                alt="Eternity"
+                className="movie-poster"
+              />
+              <div className="movie-title">Eternity</div>
+              <button className="home-card-button">View Details</button>
+            </div>
+
+            {/* Card 10 */}
+            <div className="movie-card">
+              <img
+                src="/posters/david.jpg"
+                alt="David (Upcoming)"
+                className="movie-poster"
+              />
+              <div className="movie-title">David (Upcoming)</div>
+              <button className="home-card-button">View Details</button>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      {/* simple footer */}
+      <footer className="home-footer">
+        <p>Contact: info@mbs.com &nbsp; | &nbsp; © 2025 Movie Booking System</p>
+      </footer>
+    </div>
+  );
 }
 
 export default Home;
