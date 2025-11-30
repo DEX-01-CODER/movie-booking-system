@@ -105,6 +105,11 @@ class TicketViewSet(viewsets.ModelViewSet):
         # Create ticket
         ticket = serializer.save(user=self.request.user, total_price=total_price)
 
+        # Generate QR code data for ticket
+        qr_data = f"MBS-TICKET-{ticket.id}-USER-{self.request.user.id}"
+        ticket.ticket_qr = qr_data
+        ticket.save()
+
         # Mark seats as booked and create TicketSeat objects
         TicketSeat.objects.bulk_create([
             TicketSeat(ticket=ticket, seat=ss.seat) for ss in show_seats
