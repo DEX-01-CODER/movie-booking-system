@@ -1,4 +1,10 @@
 ## Movie Booking System — Phase 2
+## Current Progress
+
+https://github.com/user-attachments/assets/f6e7a8b6-7e5a-4261-8876-fcb76857d707
+
+
+<br>
 
 ### Overview
 - **Django REST Framework** (Backend API)
