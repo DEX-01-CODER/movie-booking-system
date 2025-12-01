@@ -4,7 +4,7 @@ from rest_framework.routers import DefaultRouter
 from .views import (
     MovieViewSet, ShowViewSet, TheaterViewSet,
     TicketViewSet, ReviewViewSet, SeatViewSet, ShowSeatViewSet,
-    CreateUserView, MeView
+    CreateUserView, MeView, UpdateUserProfileView, ChangePasswordView
 )
 
 
@@ -17,7 +17,6 @@ router.register(r"show-seats", ShowSeatViewSet, basename="show-seats")
 router.register(r"tickets", TicketViewSet, basename="tickets")
 router.register(r"reviews", ReviewViewSet, basename="reviews")
 
-# Backward-compatible ticket endpoints
 booking_list = TicketViewSet.as_view({
     "get": "list",
     "post": "create",
@@ -33,6 +32,8 @@ urlpatterns = [
     # User
     path("user/register/", CreateUserView.as_view(), name="register"),
     path("user/me/", MeView.as_view(), name="me"),
+    path("user/update-profile/", UpdateUserProfileView.as_view(), name="update-profile"),
+    path("user/change-password/", ChangePasswordView.as_view(), name="change-password"),
 
     # router routes
     path("", include(router.urls)),

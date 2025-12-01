@@ -28,8 +28,6 @@ function MovieManagement() {
     try {
       setLoading(true);
       const res = await api.get("/api/movies/");
-      console.log("Movies fetched:", res.data);
-      res.data.forEach(m => console.log(`Movie: ${m.title}, Rating: ${m.rating}`));
       setMovies(res.data);
     } catch (err) {
       console.error("Error fetching movies:", err);

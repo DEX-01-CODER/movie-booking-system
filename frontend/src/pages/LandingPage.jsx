@@ -9,6 +9,7 @@ import SearchBar from "../components/SearchBar";
 function LandingPage() {
   const navigate = useNavigate();
   const [movies, setMovies] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     // redirect logged-in users to catalog
@@ -22,13 +23,17 @@ function LandingPage() {
       .catch(err => console.error('Error fetching movies:', err));
   }, [navigate]);
 
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+  };
+
   return (
     <div className="landing-page">
       <header className="landing-header">
         <div className="header-content">
           <h1 className="logo">MBS</h1>
           <div className="search-container">
-            <SearchBar />
+            <SearchBar value={searchQuery} onChange={handleSearch} />
           </div>
           <div className="auth-buttons">
             <Link to="/login"><button className="btn-login" type="button">Login</button></Link>
@@ -57,16 +62,23 @@ function LandingPage() {
       <section className="featured-section">
         <h3 className="section-title">Featured</h3>
         <div className="movies-grid">
-          {movies.map(movie => (
-            <div key={movie.id} className="movie-card">
-              <img src={movie.poster_url} alt={movie.title} className="movie-poster" />
-              <h4 className="movie-title">{movie.title}</h4>
-              <Link to={`/book/${movie.id}`}>
-                <button className="btn-view-details" type="button">View Details</button>
-              </Link>
-            </div>
-          ))}
+          {movies
+            .filter(movie => movie.title.toLowerCase().includes(searchQuery.toLowerCase()))
+            .map(movie => (
+              <div key={movie.id} className="movie-card">
+                <img src={movie.poster_url} alt={movie.title} className="movie-poster" />
+                <h4 className="movie-title">{movie.title}</h4>
+                <Link to={`/book/${movie.id}`}>
+                  <button className="btn-view-details" type="button">View Details</button>
+                </Link>
+              </div>
+            ))}
         </div>
+        {movies.filter(movie => movie.title.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 && searchQuery && (
+          <p style={{ textAlign: "center", color: "#94a3b8", marginTop: "20px" }}>
+            No movies found matching "{searchQuery}". Please try another search.
+          </p>
+        )}
       </section>
 
       <footer className="landing-footer">
