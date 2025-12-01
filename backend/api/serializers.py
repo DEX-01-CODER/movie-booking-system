@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import (
     Movie, Show, Theater, Seat, ShowSeat,
-    Ticket, TicketSeat, Payment, Review
+    Ticket, TicketSeat, Payment, Review, UserProfile
 )
 from django.contrib.auth.models import User
 
@@ -9,19 +9,30 @@ from django.contrib.auth.models import User
 # User Serializer
 class UserSerializer(serializers.ModelSerializer):
     full_name = serializers.CharField(source="first_name", required=False)
+    phone_number = serializers.SerializerMethodField()
+    address = serializers.SerializerMethodField()
     
     class Meta:
         model = User
-        fields = ["id", "username", "email", "full_name", "password"]
+        fields = ["id", "username", "email", "full_name", "phone_number", "address", "password", "is_staff"]
         extra_kwargs = {
             "password": {"write_only": True, "min_length": 6}
         }
 
+    def get_phone_number(self, obj):
+        return obj.profile.phone_number if hasattr(obj, 'profile') else None
+    
+    def get_address(self, obj):
+        return obj.profile.address if hasattr(obj, 'profile') else None
+
     def create(self, validated_data):
-        password = validated_data.pop("password")
+        password = validated_data.pop("password", None)
         user = User(**validated_data)
-        user.set_password(password)
+        if password:
+            user.set_password(password)
         user.save()
+        # Create UserProfile
+        UserProfile.objects.get_or_create(user=user)
         return user
 
 
@@ -43,7 +54,7 @@ class MovieSerializer(serializers.ModelSerializer):
 class SeatSerializer(serializers.ModelSerializer):
     class Meta:
         model = Seat
-        fields = ["id", "seat_number", "seat_type"]
+        fields = ["id", "theater", "seat_number", "seat_type"]
 
 
 class TheaterSerializer(serializers.ModelSerializer):
@@ -61,7 +72,7 @@ class ShowSeatSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ShowSeat
-        fields = ["id", "seat_number", "seat_type", "is_booked"]
+        fields = ["id", "show", "seat", "seat_number", "seat_type", "is_booked"]
 
 
 class ShowSerializer(serializers.ModelSerializer):

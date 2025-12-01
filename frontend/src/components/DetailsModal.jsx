@@ -21,7 +21,7 @@ const DetailsModal = ({ isOpen, onClose, movie = {} }) => {
                     </h2>
 
                     <p className="modal-meta">
-                        {movie.rating ? `Rating: ${movie.rating}` : "Not Yet Rated"}
+                        {movie.rating ? `Rating: ${movie.rating}/5` : "Not Yet Rated"}
                     </p>
 
                     <p className="modal-desc">

@@ -17,7 +17,7 @@ from .serializers import (
 )
 from .models import (
     Movie, Show, Theater, Ticket, Review,
-    Seat, ShowSeat, TicketSeat, Payment, CANCELLATION_POLICY
+    Seat, ShowSeat, TicketSeat, Payment, CANCELLATION_POLICY, UserProfile
 )
 
 
@@ -33,6 +33,74 @@ class MeView(APIView):
     def get(self, request):
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
+
+
+class UpdateUserProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request):
+        """Update user profile including phone_number and address"""
+        user = request.user
+        data = request.data
+        
+        # Update name if full_name is provided
+        if 'full_name' in data:
+            user.first_name = data['full_name']
+        
+        # Update email if given
+        if 'email' in data:
+            user.email = data['email']
+        
+        user.save()
+        
+        # Update or create profile
+        profile, _ = UserProfile.objects.get_or_create(user=user)
+        if 'phone_number' in data:
+            profile.phone_number = data['phone_number']
+        if 'address' in data:
+            profile.address = data['address']
+        profile.save()
+        
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
+
+
+class ChangePasswordView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        """Change user password"""
+        user = request.user
+        old_password = request.data.get('old_password')
+        new_password = request.data.get('new_password')
+        confirm_password = request.data.get('confirm_password')
+        
+        # check old password
+        if not user.check_password(old_password):
+            return Response(
+                {"error": "Old password is incorrect"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # check new password matches
+        if new_password != confirm_password:
+            return Response(
+                {"error": "New passwords do not match"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # check password length
+        if len(new_password) < 6:
+            return Response(
+                {"error": "Password must be at least 6 characters"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # update password
+        user.set_password(new_password)
+        user.save()
+        
+        return Response({"message": "Password changed successfully"})
 
 
 
@@ -77,9 +145,10 @@ class TicketViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
+        queryset = Ticket.objects.select_related("user", "show").prefetch_related("ticket_seats__seat")
         if user.is_staff:
-            return Ticket.objects.all()
-        return Ticket.objects.filter(user=user)
+            return queryset
+        return queryset.filter(user=user)
 
     @transaction.atomic
     def perform_create(self, serializer):
@@ -198,6 +267,7 @@ class TicketViewSet(viewsets.ModelViewSet):
 
 
 
+
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     permission_classes = [IsAuthenticated]
@@ -211,3 +281,27 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+
+class SeatViewSet(viewsets.ModelViewSet):
+    serializer_class = SeatSerializer
+    permission_classes = [IsAdminOrReadOnly]
+
+    def get_queryset(self):
+        queryset = Seat.objects.select_related("theater").all()
+        theater_id = self.request.query_params.get("theater")
+        if theater_id:
+            queryset = queryset.filter(theater_id=theater_id)
+        return queryset
+
+
+class ShowSeatViewSet(viewsets.ModelViewSet):
+    serializer_class = ShowSeatSerializer
+    permission_classes = [IsAdminOrReadOnly]
+
+    def get_queryset(self):
+        queryset = ShowSeat.objects.select_related("show", "seat").all()
+        show_id = self.request.query_params.get("show")
+        if show_id:
+            queryset = queryset.filter(show_id=show_id)
+        return queryset

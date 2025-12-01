@@ -3,6 +3,16 @@ from django.contrib.auth.models import User
 import uuid
 
 
+# extending the User 
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    phone_number = models.CharField(max_length=20, blank=True, null=True)
+    address = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.user.username}'s profile"
+
+
 # for the cancellation policy, different percent refund according to time
 # for >= 24 hours, we will refund 100%, for 6 to 24 hrs, we will refund 75%
 # for 1-6 hours before show, 50% and no allow to cancel within 1 hour of show.
@@ -137,4 +147,4 @@ class Review(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.movie.title} - {self.rating}/10"
+        return f"{self.movie.title} - {self.rating}/5"

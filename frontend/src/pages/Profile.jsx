@@ -11,21 +11,37 @@ function Profile() {
     fullName: "",
     email: "",
     phoneNumber: "",
+    address: "",
+  });
+
+  const [passwordData, setPasswordData] = useState({
+    oldPassword: "",
+    newPassword: "",
+    confirmPassword: "",
   });
 
   const [isEditing, setIsEditing] = useState(false);
+  const [showChangePassword, setShowChangePassword] = useState(false);
+  const [showPassword, setShowPassword] = useState({
+    current: false,
+    new: false,
+    confirm: false,
+  });
   const [loading, setLoading] = useState(true);
-  const [showPassword, setShowPassword] = useState(false);
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [changingPassword, setChangingPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const res = await api.get("/api/user/me/");
-
         setProfile({
           fullName: res.data.full_name || "",
           email: res.data.email || "",
           phoneNumber: res.data.phone_number || "",
+          address: res.data.address || "",
         });
       } catch (err) {
         console.error("Profile load error:", err);
@@ -44,14 +60,70 @@ function Profile() {
     setProfile((p) => ({ ...p, [name]: value }));
   };
 
-  // Edit / Save button
-  const handleEditClick = () => {
-    if (!isEditing) {
-      setIsEditing(true);
-    } else {
-      // later you can send PATCH to backend
-      alert("Saving profile to backend is not implemented yet.");
+  const handlePasswordChange = (e) => {
+    const { name, value } = e.target;
+    setPasswordData((p) => ({ ...p, [name]: value }));
+  };
+
+  // Save profile
+  const handleSaveProfile = async () => {
+    setError("");
+    setSuccess("");
+    setSavingProfile(true);
+    try {
+      await api.patch("/api/user/update-profile/", {
+        full_name: profile.fullName,
+        phone_number: profile.phoneNumber,
+        address: profile.address,
+      });
+      setSuccess("Profile updated successfully!");
       setIsEditing(false);
+      setTimeout(() => setSuccess(""), 3000);
+    } catch (err) {
+      setError(err.response?.data?.error || "Failed to update profile");
+      console.error("Error updating profile:", err);
+    } finally {
+      setSavingProfile(false);
+    }
+  };
+
+  // Change password
+  const handleChangePassword = async () => {
+    setError("");
+    setSuccess("");
+
+    // Client-side validation first
+    if (!passwordData.oldPassword) {
+      setError("Please enter your current password");
+      return;
+    }
+
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      setError("New passwords do not match");
+      return;
+    }
+
+    if (passwordData.newPassword.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
+
+    setChangingPassword(true);
+    try {
+      await api.post("/api/user/change-password/", {
+        old_password: passwordData.oldPassword,
+        new_password: passwordData.newPassword,
+        confirm_password: passwordData.confirmPassword,
+      });
+      setSuccess("Password changed successfully!");
+      setPasswordData({ oldPassword: "", newPassword: "", confirmPassword: "" });
+      setShowChangePassword(false);
+      setTimeout(() => setSuccess(""), 3000);
+    } catch (err) {
+      setError(err.response?.data?.error || "Failed to change password");
+      console.error("Error changing password:", err);
+    } finally {
+      setChangingPassword(false);
     }
   };
 
@@ -61,13 +133,11 @@ function Profile() {
     navigate("/login");
   };
 
-  const handleBackHome = () => navigate("/home");
-
   if (loading) {
     return (
       <div className="form-page">
-        <div className="form-card">
-          <p style={{ textAlign: "center", color: "white" }}>
+        <div className="form-container">
+          <p style={{ textAlign: "center", color: "#94a3b8" }}>
             Loading profile...
           </p>
         </div>
@@ -77,15 +147,17 @@ function Profile() {
 
   return (
     <div className="form-page">
-      <div className="form-card profile-card">
+      <div className="form-container profile-card">
         <h2 className="form-title">Edit Profile</h2>
         <p className="form-subtitle">
           View and manage your account information
         </p>
 
         {/* ===== USER PROFILE SECTION ===== */}
-        <div className="profile-section">
-          {/* Full Name */}
+        <div className="profile-section" style={{ marginBottom: "20px" }}>
+          <h3 style={{ color: "#f1f5f9", marginTop: 0 }}>Account Information</h3>
+
+          {/* full Name */}
           <label className="form-label">Full Name</label>
           <input
             className="form-input"
@@ -120,40 +192,207 @@ function Profile() {
             onChange={handleChange}
           />
 
-          {/* Password field with eye icon (placeholder only) */}
-          <label className="form-label">Password</label>
-          <div className="password-field">
-            <input
-              className="form-input"
-              type={showPassword ? "text" : "password"}
-              name="password"
-              value="••••••••••"
-              disabled
-              readOnly
-            />
+          {/* Address */}
+          <label className="form-label">Address</label>
+          <textarea
+            className="form-input"
+            name="address"
+            value={profile.address}
+            disabled={!isEditing}
+            onChange={handleChange}
+            style={{ minHeight: "80px", resize: "vertical" }}
+          />
+
+          <button
+            type="button"
+            className="form-button"
+            style={{ background: isEditing ? "#10b981" : "#2563eb" }}
+            onClick={() => {
+              if (!isEditing) {
+                setIsEditing(true);
+              } else {
+                handleSaveProfile();
+              }
+            }}
+            disabled={savingProfile}
+          >
+            {savingProfile ? "Saving..." : isEditing ? "Save Changes" : "Edit Profile"}
+          </button>
+
+          {isEditing && (
             <button
               type="button"
-              className="password-toggle"
-              onClick={() => setShowPassword((v) => !v)}
+              className="form-button"
+              style={{ background: "#6b7280", marginTop: "10px" }}
+              onClick={() => setIsEditing(false)}
+              disabled={savingProfile}
             >
-              {showPassword ? "🙈" : "👁️"}
+              Cancel
             </button>
-          </div>
+          )}
 
-          <button
-            type="button"
-            className="form-button primary"
-            onClick={handleEditClick}
-          >
-            {isEditing ? "Save Changes" : "Edit Profile"}
-          </button>
+          {/* error and success msg for profile */}
+          {error && !showChangePassword && (
+            <div style={{
+              background: "rgba(239, 68, 68, 0.1)",
+              color: "#fca5a5",
+              padding: "12px",
+              borderRadius: "8px",
+              marginTop: "16px",
+              border: "1px solid rgba(239, 68, 68, 0.3)",
+            }}>
+              {error}
+            </div>
+          )}
+          {success && !showChangePassword && (
+            <div style={{
+              background: "rgba(34, 197, 94, 0.1)",
+              color: "#86efac",
+              padding: "12px",
+              borderRadius: "8px",
+              marginTop: "16px",
+              border: "1px solid rgba(34, 197, 94, 0.3)",
+            }}>
+              {success}
+            </div>
+          )}
         </div>
 
-        {/* ===== ACTION BUTTONS ===== */}
-        <div style={{ marginTop: "20px", display: "flex", gap: "10px", justifyContent: "center" }}>
+        {/* section to change password */}
+        <div className="profile-section" style={{ marginBottom: "20px" }}>
+          <h3 style={{ color: "#f1f5f9", marginTop: 0 }}>Security</h3>
+          
+          {!showChangePassword ? (
+            <button
+              type="button"
+              className="form-button"
+              style={{ background: "#2563eb" }}
+              onClick={() => setShowChangePassword(true)}
+            >
+              Change Password
+            </button>
+          ) : (
+            <>
+              {/* current password */}
+              <label className="form-label">Current Password</label>
+              <div className="password-field" style={{ marginBottom: "16px" }}>
+                <input
+                  className="form-input"
+                  type={showPassword.current ? "text" : "password"}
+                  name="oldPassword"
+                  value={passwordData.oldPassword}
+                  onChange={handlePasswordChange}
+                  placeholder="Enter current password"
+                />
+                <button
+                  type="button"
+                  className="password-toggle"
+                  onClick={() => setShowPassword(p => ({ ...p, current: !p.current }))}
+                >
+                  {showPassword.current ? "🙈" : "👁️"}
+                </button>
+              </div>
+
+              {/* new Pasword */}
+              <label className="form-label">New Password</label>
+              <div className="password-field" style={{ marginBottom: "16px" }}>
+                <input
+                  className="form-input"
+                  type={showPassword.new ? "text" : "password"}
+                  name="newPassword"
+                  value={passwordData.newPassword}
+                  onChange={handlePasswordChange}
+                  placeholder="Enter new password"
+                />
+                <button
+                  type="button"
+                  className="password-toggle"
+                  onClick={() => setShowPassword(p => ({ ...p, new: !p.new }))}
+                >
+                  {showPassword.new ? "🙈" : "👁️"}
+                </button>
+              </div>
+
+              {/* confirm the Password */}
+              <label className="form-label">Confirm New Password</label>
+              <div className="password-field" style={{ marginBottom: "16px" }}>
+                <input
+                  className="form-input"
+                  type={showPassword.confirm ? "text" : "password"}
+                  name="confirmPassword"
+                  value={passwordData.confirmPassword}
+                  onChange={handlePasswordChange}
+                  placeholder="Confirm new password"
+                />
+                <button
+                  type="button"
+                  className="password-toggle"
+                  onClick={() => setShowPassword(p => ({ ...p, confirm: !p.confirm }))}
+                >
+                  {showPassword.confirm ? "🙈" : "👁️"}
+                </button>
+              </div>
+
+              <div style={{ display: "flex", gap: "10px" }}>
+                <button
+                  type="button"
+                  className="form-button"
+                  style={{ background: "#10b981", flex: 1, opacity: changingPassword ? 0.6 : 1 }}
+                  onClick={handleChangePassword}
+                  disabled={changingPassword}
+                >
+                  {changingPassword ? "Updating..." : "Update Password"}
+                </button>
+                <button
+                  type="button"
+                  className="form-button"
+                  style={{ background: "#6b7280", flex: 1 }}
+                  onClick={() => {
+                    setShowChangePassword(false);
+                    setPasswordData({ oldPassword: "", newPassword: "", confirmPassword: "" });
+                    setError("");
+                  }}
+                  disabled={changingPassword}
+                >
+                  Cancel
+                </button>
+              </div>
+
+              {/* error and Success msg for Password */}
+              {error && showChangePassword && (
+                <div style={{
+                  background: "rgba(239, 68, 68, 0.1)",
+                  color: "#fca5a5",
+                  padding: "12px",
+                  borderRadius: "8px",
+                  marginTop: "16px",
+                  border: "1px solid rgba(239, 68, 68, 0.3)",
+                }}>
+                  {error}
+                </div>
+              )}
+              {success && showChangePassword && (
+                <div style={{
+                  background: "rgba(34, 197, 94, 0.1)",
+                  color: "#86efac",
+                  padding: "12px",
+                  borderRadius: "8px",
+                  marginTop: "16px",
+                  border: "1px solid rgba(34, 197, 94, 0.3)",
+                }}>
+                  {success}
+                </div>
+              )}
+            </>
+          )}
+        </div>
+
+        {/* buttons */}
+        <div style={{ marginTop: "30px", display: "flex", gap: "10px", justifyContent: "center" }}>
           <button
             type="button"
-            className="form-button danger"
+            className="form-button"
+            style={{ background: "#dc2626", flex: 1 }}
             onClick={handleLogout}
           >
             Logout
@@ -162,6 +401,7 @@ function Profile() {
           <button
             type="button"
             className="form-link-button"
+            style={{ flex: 1, color: "#60a5fa" }}
             onClick={() => navigate("/catalog")}
           >
             Back to Catalog
