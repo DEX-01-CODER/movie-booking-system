@@ -77,9 +77,10 @@ class TicketViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
+        queryset = Ticket.objects.select_related("user", "show").prefetch_related("ticket_seats__seat")
         if user.is_staff:
-            return Ticket.objects.all()
-        return Ticket.objects.filter(user=user)
+            return queryset
+        return queryset.filter(user=user)
 
     @transaction.atomic
     def perform_create(self, serializer):
@@ -198,6 +199,7 @@ class TicketViewSet(viewsets.ModelViewSet):
 
 
 
+
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     permission_classes = [IsAuthenticated]
@@ -211,3 +213,27 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+
+class SeatViewSet(viewsets.ModelViewSet):
+    serializer_class = SeatSerializer
+    permission_classes = [IsAdminOrReadOnly]
+
+    def get_queryset(self):
+        queryset = Seat.objects.select_related("theater").all()
+        theater_id = self.request.query_params.get("theater")
+        if theater_id:
+            queryset = queryset.filter(theater_id=theater_id)
+        return queryset
+
+
+class ShowSeatViewSet(viewsets.ModelViewSet):
+    serializer_class = ShowSeatSerializer
+    permission_classes = [IsAdminOrReadOnly]
+
+    def get_queryset(self):
+        queryset = ShowSeat.objects.select_related("show", "seat").all()
+        show_id = self.request.query_params.get("show")
+        if show_id:
+            queryset = queryset.filter(show_id=show_id)
+        return queryset

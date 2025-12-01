@@ -14,6 +14,7 @@ import OrderHistory from "./pages/OrderHistory.jsx";
 import Catalog from "./pages/Catalog.jsx";
 import ReviewPage from "./pages/ReviewPage.jsx";
 import UserOrders from "./pages/UserOrders.jsx";
+import AdminDashboard from "./pages/AdminDashboard.jsx";
 
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
@@ -110,6 +111,14 @@ function App() {
           element={
             <ProtectedRoute>
               <OrderHistory />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute isAdmin={true}>
+              <AdminDashboard />
             </ProtectedRoute>
           }
         />

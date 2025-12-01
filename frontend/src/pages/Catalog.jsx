@@ -16,6 +16,7 @@ const Catalog = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedMovie, setSelectedMovie] = useState(null);
     const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false);
 
     const navigate = useNavigate();
 
@@ -23,6 +24,11 @@ const Catalog = () => {
     api.get("/api/movies/")
       .then(res => setMovies(res.data))
       .catch(err => console.error(err));
+    
+    // Check if user is admin
+    api.get("/api/user/me/")
+      .then(res => setIsAdmin(res.data.is_staff || false))
+      .catch(err => console.error("Error checking admin:", err));
     }, []);
 
      const handleLogout = () => {
@@ -89,6 +95,24 @@ const Catalog = () => {
                 minWidth: "150px",
                 marginTop: "5px"
               }}>
+                {isAdmin && (
+                  <Link 
+                    to="/admin"
+                    className="home-link-btn"
+                    style={{
+                      display: "block",
+                      padding: "10px 15px",
+                      textDecoration: "none",
+                      color: "#dc3545",
+                      borderBottom: "1px solid #eee",
+                      cursor: "pointer",
+                      fontWeight: "bold"
+                    }}
+                    onClick={() => setProfileDropdownOpen(false)}
+                  >
+                    🔧 Admin Panel
+                  </Link>
+                )}
                 <Link 
                   to="/profile"
                   className="home-link-btn"
@@ -104,20 +128,22 @@ const Catalog = () => {
                 >
                   Edit Profile
                 </Link>
-                <Link 
-                  to="/my-orders"
-                  className="home-link-btn"
-                  style={{
-                    display: "block",
-                    padding: "10px 15px",
-                    textDecoration: "none",
-                    color: "#007bff",
-                    cursor: "pointer"
-                  }}
-                  onClick={() => setProfileDropdownOpen(false)}
-                >
-                  My Orders
-                </Link>
+                {!isAdmin && (
+                  <Link 
+                    to="/my-orders"
+                    className="home-link-btn"
+                    style={{
+                      display: "block",
+                      padding: "10px 15px",
+                      textDecoration: "none",
+                      color: "#007bff",
+                      cursor: "pointer"
+                    }}
+                    onClick={() => setProfileDropdownOpen(false)}
+                  >
+                    My Orders
+                  </Link>
+                )}
               </div>
             )}
           </div>

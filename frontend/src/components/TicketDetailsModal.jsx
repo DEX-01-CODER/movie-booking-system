@@ -23,7 +23,7 @@ export default function TicketDetailsModal({isOpen, onClose, order}) {
                         {movie.title}
                     </h2>
                     <p className="modal-meta">
-                        {movie.rating ? 'Rating: ${movie.rating/5' : "Not Yet Rated"}
+                        {movie.rating ? `Rating: ${movie.rating}/5` : "Not Yet Rated"}
                     </p>
                     <p className="modal-desc">
                         {movie.description}

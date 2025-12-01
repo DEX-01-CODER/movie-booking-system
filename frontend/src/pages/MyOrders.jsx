@@ -10,6 +10,7 @@ function MyOrders() {
   const navigate = useNavigate();
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentUser, setCurrentUser] = useState(null);
   const [cancelModal, setCancelModal] = useState({
     isOpen: false,
     ticketId: null,
@@ -25,12 +26,49 @@ function MyOrders() {
   const ticketViewRef = useRef();
 
   useEffect(() => {
-    fetchTickets();
+    fetchUserAndTickets();
   }, [navigate]);
+
+  const fetchUserAndTickets = async () => {
+    try {
+      setLoading(true);
+      // Get current user info
+      const userRes = await api.get("/api/user/me/");
+      
+      // Redirect admins to dashboard - they shouldn't be in "My Orders"
+      if (userRes.data.is_staff) {
+        navigate("/admin");
+        return;
+      }
+      
+      setCurrentUser(userRes.data);
+      
+      // Get tickets for current user only
+      const ticketsRes = await api.get("/api/tickets/");
+      setTickets(ticketsRes.data);
+    } catch (err) {
+      console.error("Error loading data:", err);
+      if (err.response?.status === 401) navigate("/login");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchTickets = async () => {
     try {
       setLoading(true);
+      // Get current user info
+      const userRes = await api.get("/api/user/me/");
+      
+      // Redirect admins to dashboard - they shouldn't be in "My Orders"
+      if (userRes.data.is_staff) {
+        navigate("/admin");
+        return;
+      }
+      
+      setCurrentUser(userRes.data);
+      
+      // Get tickets for current user only
       const ticketsRes = await api.get("/api/tickets/");
       setTickets(ticketsRes.data);
     } catch (err) {

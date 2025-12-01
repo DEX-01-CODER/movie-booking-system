@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 
 from .views import (
     MovieViewSet, ShowViewSet, TheaterViewSet,
-    TicketViewSet, ReviewViewSet,
+    TicketViewSet, ReviewViewSet, SeatViewSet, ShowSeatViewSet,
     CreateUserView, MeView
 )
 
@@ -12,6 +12,8 @@ router = DefaultRouter()
 router.register(r"movies", MovieViewSet, basename="movies")
 router.register(r"shows", ShowViewSet, basename="shows")
 router.register(r"theaters", TheaterViewSet, basename="theaters")
+router.register(r"seats", SeatViewSet, basename="seats")
+router.register(r"show-seats", ShowSeatViewSet, basename="show-seats")
 router.register(r"tickets", TicketViewSet, basename="tickets")
 router.register(r"reviews", ReviewViewSet, basename="reviews")
 
