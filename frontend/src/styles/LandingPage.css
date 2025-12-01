@@ -9,9 +9,10 @@
 
 /* ==== HEADER ==== */
 .landing-header {
-  background-color: #ffffff;
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
   padding: 16px 0;
-  box-shadow: 0 2px 4px rgba(15, 23, 42, 0.12);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.18);
   position: sticky;
   top: 0;
   z-index: 10;
@@ -29,7 +30,7 @@
 .logo {
   font-size: 1.9rem;
   font-weight: 800;
-  color: #2563eb;
+  color: #60a5fa;
   margin: 0;
 }
 
@@ -52,6 +53,13 @@
 
 .nav-link:hover {
   color: #2563eb;
+}
+
+/* Search Container */
+.search-container {
+  flex: 1;
+  max-width: 400px;
+  margin: 0 30px;
 }
 
 /* Auth buttons */
