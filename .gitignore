@@ -1,27 +1,38 @@
-# Node / Frontend
+# ===============================
+# FRONTEND (Node / Vite)
+# ===============================
 node_modules/
 dist/
 .vite/
+frontend/node_modules/
 
-# Python / Backend
+# ===============================
+# BACKEND (Python / Django)
+# ===============================
 backend/.venv/
+backend/venv/
+backend/.env
 backend/__pycache__/
-backend/*.sqlite3
-backend/.pytest_cache/
 backend/backend/__pycache__/
 backend/api/__pycache__/
+backend/api/migrations/__pycache__/
+backend/*.sqlite3
+backend/.pytest_cache/
 
-# OS
+# ===============================
+# ENVIRONMENTS
+# ===============================
+.env
+env/
+env
+
+# ===============================
+# OS / EDITOR FILES
+# ===============================
 .DS_Store
 Thumbs.db
 
-env/
-
-frontend/node_modules
-backend/.env
-
-
-backend/.env
-env
-
-backend\api\migrations\__pycache__
+# ===============================
+# LOGS / LOCAL DATA
+# ===============================
+*.log
