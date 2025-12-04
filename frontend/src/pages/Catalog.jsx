@@ -1,57 +1,76 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "../styles/Home.css";
-import "../styles/MovieCatalog.css";
-import SearchBar from "../components/SearchBar";
+import api from "../api";
+import DetailsModal from "../components/DetailsModal";
 import FilterButtons from "../components/FilterButtons";
 import MovieList from "../components/MovieList";
-import api from "../api";
 import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from "../constants";
-import DetailsModal from "../components/DetailsModal";
+import "../styles/Home.css";
+import "../styles/MovieCatalog.css";
 
 const Catalog = () => {
-    const [movies, setMovies] = useState([]);
-    const [filter, setFilter] = useState("all");
-    const [search, setSearch] = useState("");
-    const [modalOpen, setModalOpen] = useState(false);
-    const [selectedMovie, setSelectedMovie] = useState(null);
-    const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
-    const [isAdmin, setIsAdmin] = useState(false);
+  const [movies, setMovies] = useState([]);
+  const [filter, setFilter] = useState("all");
+  const [search, setSearch] = useState("");
 
-    const navigate = useNavigate();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedMovie, setSelectedMovie] = useState(null);
 
-    useEffect(() => {
-    api.get("/api/movies/")
-      .then(res => setMovies(res.data))
-      .catch(err => console.error(err));
-    
-    // Check if user is admin
-    api.get("/api/user/me/")
-      .then(res => setIsAdmin(res.data.is_staff || false))
-      .catch(err => console.error("Error checking admin:", err));
-    }, []);
+  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
-     const handleLogout = () => {
-        localStorage.removeItem(ACCESS_TOKEN_KEY);
-        localStorage.removeItem(REFRESH_TOKEN_KEY);
-        navigate("/login", { replace: true });
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [moviesRes, userRes] = await Promise.all([
+          api.get("/api/movies/"),
+          api.get("/api/user/me/"),
+        ]);
+
+        setMovies(moviesRes.data || []);
+        setIsAdmin(Boolean(userRes.data?.is_staff));
+      } catch (err) {
+        console.error("Error loading catalog data:", err);
+      }
     };
 
-    const handleOpenModal = (type, movie) => {
-    if (type === "DetailsModal") {
-        setSelectedMovie(movie);
-        setModalOpen(true);
+    fetchData();
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem(ACCESS_TOKEN_KEY);
+    localStorage.removeItem(REFRESH_TOKEN_KEY);
+    navigate("/login", { replace: true });
+  };
+
+  const handleOpenModal = (type, movie) => {
+    if (type === "DetailsModal" && movie) {
+      setSelectedMovie(movie);
+      setModalOpen(true);
     }
-    };
-    const handleCloseModal = () => setModalOpen(false);
+  };
 
-    const filteredMovies = movies.filter((movie) => {
-        const matchFilter = filter === "all" || (filter == "new" && movie.is_current) || (filter == "upcoming" && !movie.is_current);
-        const matchSearch = movie.title.toLowerCase().includes(search.toLowerCase());
-        return matchFilter && matchSearch;
-    });
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setSelectedMovie(null);
+  };
 
-    return (
+  const filteredMovies = movies.filter((movie) => {
+    const matchFilter =
+      filter === "all" ||
+      (filter === "new" && movie.is_current) ||
+      (filter === "upcoming" && !movie.is_current);
+
+    const matchSearch = movie.title
+      .toLowerCase()
+      .includes(search.toLowerCase());
+
+    return matchFilter && matchSearch;
+  });
+
+  return (
     <div className="catalog-container">
       {/* ===== Top header bar ===== */}
       <header className="home-header">
@@ -72,31 +91,34 @@ const Catalog = () => {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
-          
+
           {/* Profile Dropdown */}
           <div style={{ position: "relative", display: "inline-block" }}>
-            <button 
-              type="button" 
+            <button
+              type="button"
               className="home-link-btn"
               onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
             >
               👤 Account
             </button>
+
             {profileDropdownOpen && (
-              <div style={{
-                position: "absolute",
-                top: "100%",
-                right: 0,
-                backgroundColor: "white",
-                border: "1px solid #ddd",
-                borderRadius: "4px",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                zIndex: 1000,
-                minWidth: "150px",
-                marginTop: "5px"
-              }}>
+              <div
+                style={{
+                  position: "absolute",
+                  top: "100%",
+                  right: 0,
+                  backgroundColor: "white",
+                  border: "1px solid #ddd",
+                  borderRadius: "4px",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                  zIndex: 1000,
+                  minWidth: "150px",
+                  marginTop: "5px",
+                }}
+              >
                 {isAdmin && (
-                  <Link 
+                  <Link
                     to="/admin"
                     className="home-link-btn"
                     style={{
@@ -106,14 +128,15 @@ const Catalog = () => {
                       color: "#dc3545",
                       borderBottom: "1px solid #eee",
                       cursor: "pointer",
-                      fontWeight: "bold"
+                      fontWeight: "bold",
                     }}
                     onClick={() => setProfileDropdownOpen(false)}
                   >
                     🔧 Admin Panel
                   </Link>
                 )}
-                <Link 
+
+                <Link
                   to="/profile"
                   className="home-link-btn"
                   style={{
@@ -122,14 +145,15 @@ const Catalog = () => {
                     textDecoration: "none",
                     color: "#007bff",
                     borderBottom: "1px solid #eee",
-                    cursor: "pointer"
+                    cursor: "pointer",
                   }}
                   onClick={() => setProfileDropdownOpen(false)}
                 >
                   Edit Profile
                 </Link>
+
                 {!isAdmin && (
-                  <Link 
+                  <Link
                     to="/my-orders"
                     className="home-link-btn"
                     style={{
@@ -137,7 +161,7 @@ const Catalog = () => {
                       padding: "10px 15px",
                       textDecoration: "none",
                       color: "#007bff",
-                      cursor: "pointer"
+                      cursor: "pointer",
                     }}
                     onClick={() => setProfileDropdownOpen(false)}
                   >
@@ -148,7 +172,11 @@ const Catalog = () => {
             )}
           </div>
 
-          <button type="button" className="home-link-btn" onClick={handleLogout}>
+          <button
+            type="button"
+            className="home-link-btn"
+            onClick={handleLogout}
+          >
             Logout
           </button>
         </div>
@@ -157,26 +185,26 @@ const Catalog = () => {
       {/* ===== Main content ===== */}
       <main className="home-content">
         <section className="home-section">
-          <h2 className="home-section-title">Movie Booking Site</h2>
           <MovieList movies={filteredMovies} onOpenModal={handleOpenModal} />
         </section>
       </main>
 
       {/* simple footer */}
       <footer className="home-footer">
-        <p>Contact: info@mbs.com &nbsp; | &nbsp; © 2025 Movie Booking System</p>
+        <p>
+          Contact: info@mbs.com &nbsp; | &nbsp; © 2025 Movie Booking System
+        </p>
       </footer>
 
       {modalOpen && (
         <DetailsModal
-            isOpen={modalOpen}
-            onClose={handleCloseModal}
-            movie={selectedMovie}
+          isOpen={modalOpen}
+          onClose={handleCloseModal}
+          movie={selectedMovie}
         />
-        )}
+      )}
     </div>
   );
-
-}
+};
 
 export default Catalog;

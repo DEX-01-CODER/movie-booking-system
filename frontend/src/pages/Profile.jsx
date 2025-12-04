@@ -11,7 +11,6 @@ function Profile() {
     fullName: "",
     email: "",
     phoneNumber: "",
-    address: "",
   });
 
   const [passwordData, setPasswordData] = useState({
@@ -41,7 +40,6 @@ function Profile() {
           fullName: res.data.full_name || "",
           email: res.data.email || "",
           phoneNumber: res.data.phone_number || "",
-          address: res.data.address || "",
         });
       } catch (err) {
         console.error("Profile load error:", err);
@@ -74,7 +72,6 @@ function Profile() {
       await api.patch("/api/user/update-profile/", {
         full_name: profile.fullName,
         phone_number: profile.phoneNumber,
-        address: profile.address,
       });
       setSuccess("Profile updated successfully!");
       setIsEditing(false);
@@ -116,7 +113,11 @@ function Profile() {
         confirm_password: passwordData.confirmPassword,
       });
       setSuccess("Password changed successfully!");
-      setPasswordData({ oldPassword: "", newPassword: "", confirmPassword: "" });
+      setPasswordData({
+        oldPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
       setShowChangePassword(false);
       setTimeout(() => setSuccess(""), 3000);
     } catch (err) {
@@ -157,7 +158,7 @@ function Profile() {
         <div className="profile-section" style={{ marginBottom: "20px" }}>
           <h3 style={{ color: "#f1f5f9", marginTop: 0 }}>Account Information</h3>
 
-          {/* full Name */}
+          {/* Full Name */}
           <label className="form-label">Full Name</label>
           <input
             className="form-input"
@@ -192,17 +193,6 @@ function Profile() {
             onChange={handleChange}
           />
 
-          {/* Address */}
-          <label className="form-label">Address</label>
-          <textarea
-            className="form-input"
-            name="address"
-            value={profile.address}
-            disabled={!isEditing}
-            onChange={handleChange}
-            style={{ minHeight: "80px", resize: "vertical" }}
-          />
-
           <button
             type="button"
             className="form-button"
@@ -216,7 +206,11 @@ function Profile() {
             }}
             disabled={savingProfile}
           >
-            {savingProfile ? "Saving..." : isEditing ? "Save Changes" : "Edit Profile"}
+            {savingProfile
+              ? "Saving..."
+              : isEditing
+              ? "Save Changes"
+              : "Edit Profile"}
           </button>
 
           {isEditing && (
@@ -233,35 +227,39 @@ function Profile() {
 
           {/* error and success msg for profile */}
           {error && !showChangePassword && (
-            <div style={{
-              background: "rgba(239, 68, 68, 0.1)",
-              color: "#fca5a5",
-              padding: "12px",
-              borderRadius: "8px",
-              marginTop: "16px",
-              border: "1px solid rgba(239, 68, 68, 0.3)",
-            }}>
+            <div
+              style={{
+                background: "rgba(239, 68, 68, 0.1)",
+                color: "#fca5a5",
+                padding: "12px",
+                borderRadius: "8px",
+                marginTop: "16px",
+                border: "1px solid rgba(239, 68, 68, 0.3)",
+              }}
+            >
               {error}
             </div>
           )}
           {success && !showChangePassword && (
-            <div style={{
-              background: "rgba(34, 197, 94, 0.1)",
-              color: "#86efac",
-              padding: "12px",
-              borderRadius: "8px",
-              marginTop: "16px",
-              border: "1px solid rgba(34, 197, 94, 0.3)",
-            }}>
+            <div
+              style={{
+                background: "rgba(34, 197, 94, 0.1)",
+                color: "#86efac",
+                padding: "12px",
+                borderRadius: "8px",
+                marginTop: "16px",
+                border: "1px solid rgba(34, 197, 94, 0.3)",
+              }}
+            >
               {success}
             </div>
           )}
         </div>
 
-        {/* section to change password */}
+        {/* ===== SECURITY SECTION ===== */}
         <div className="profile-section" style={{ marginBottom: "20px" }}>
           <h3 style={{ color: "#f1f5f9", marginTop: 0 }}>Security</h3>
-          
+
           {!showChangePassword ? (
             <button
               type="button"
@@ -287,13 +285,15 @@ function Profile() {
                 <button
                   type="button"
                   className="password-toggle"
-                  onClick={() => setShowPassword(p => ({ ...p, current: !p.current }))}
+                  onClick={() =>
+                    setShowPassword((p) => ({ ...p, current: !p.current }))
+                  }
                 >
                   {showPassword.current ? "🙈" : "👁️"}
                 </button>
               </div>
 
-              {/* new Pasword */}
+              {/* new password */}
               <label className="form-label">New Password</label>
               <div className="password-field" style={{ marginBottom: "16px" }}>
                 <input
@@ -307,13 +307,15 @@ function Profile() {
                 <button
                   type="button"
                   className="password-toggle"
-                  onClick={() => setShowPassword(p => ({ ...p, new: !p.new }))}
+                  onClick={() =>
+                    setShowPassword((p) => ({ ...p, new: !p.new }))
+                  }
                 >
                   {showPassword.new ? "🙈" : "👁️"}
                 </button>
               </div>
 
-              {/* confirm the Password */}
+              {/* confirm password */}
               <label className="form-label">Confirm New Password</label>
               <div className="password-field" style={{ marginBottom: "16px" }}>
                 <input
@@ -327,7 +329,9 @@ function Profile() {
                 <button
                   type="button"
                   className="password-toggle"
-                  onClick={() => setShowPassword(p => ({ ...p, confirm: !p.confirm }))}
+                  onClick={() =>
+                    setShowPassword((p) => ({ ...p, confirm: !p.confirm }))
+                  }
                 >
                   {showPassword.confirm ? "🙈" : "👁️"}
                 </button>
@@ -337,7 +341,11 @@ function Profile() {
                 <button
                   type="button"
                   className="form-button"
-                  style={{ background: "#10b981", flex: 1, opacity: changingPassword ? 0.6 : 1 }}
+                  style={{
+                    background: "#10b981",
+                    flex: 1,
+                    opacity: changingPassword ? 0.6 : 1,
+                  }}
                   onClick={handleChangePassword}
                   disabled={changingPassword}
                 >
@@ -349,7 +357,11 @@ function Profile() {
                   style={{ background: "#6b7280", flex: 1 }}
                   onClick={() => {
                     setShowChangePassword(false);
-                    setPasswordData({ oldPassword: "", newPassword: "", confirmPassword: "" });
+                    setPasswordData({
+                      oldPassword: "",
+                      newPassword: "",
+                      confirmPassword: "",
+                    });
                     setError("");
                   }}
                   disabled={changingPassword}
@@ -358,28 +370,32 @@ function Profile() {
                 </button>
               </div>
 
-              {/* error and Success msg for Password */}
+              {/* error and success msg for password */}
               {error && showChangePassword && (
-                <div style={{
-                  background: "rgba(239, 68, 68, 0.1)",
-                  color: "#fca5a5",
-                  padding: "12px",
-                  borderRadius: "8px",
-                  marginTop: "16px",
-                  border: "1px solid rgba(239, 68, 68, 0.3)",
-                }}>
+                <div
+                  style={{
+                    background: "rgba(239, 68, 68, 0.1)",
+                    color: "#fca5a5",
+                    padding: "12px",
+                    borderRadius: "8px",
+                    marginTop: "16px",
+                    border: "1px solid rgba(239, 68, 68, 0.3)",
+                  }}
+                >
                   {error}
                 </div>
               )}
               {success && showChangePassword && (
-                <div style={{
-                  background: "rgba(34, 197, 94, 0.1)",
-                  color: "#86efac",
-                  padding: "12px",
-                  borderRadius: "8px",
-                  marginTop: "16px",
-                  border: "1px solid rgba(34, 197, 94, 0.3)",
-                }}>
+                <div
+                  style={{
+                    background: "rgba(34, 197, 94, 0.1)",
+                    color: "#86efac",
+                    padding: "12px",
+                    borderRadius: "8px",
+                    marginTop: "16px",
+                    border: "1px solid rgba(34, 197, 94, 0.3)",
+                  }}
+                >
                   {success}
                 </div>
               )}
@@ -388,7 +404,14 @@ function Profile() {
         </div>
 
         {/* buttons */}
-        <div style={{ marginTop: "30px", display: "flex", gap: "10px", justifyContent: "center" }}>
+        <div
+          style={{
+            marginTop: "30px",
+            display: "flex",
+            gap: "10px",
+            justifyContent: "center",
+          }}
+        >
           <button
             type="button"
             className="form-button"
@@ -401,7 +424,7 @@ function Profile() {
           <button
             type="button"
             className="form-link-button"
-            style={{ flex: 1, color: "#60a5fa" }}
+            style={{ flex: 1 }}
             onClick={() => navigate("/catalog")}
           >
             Back to Catalog

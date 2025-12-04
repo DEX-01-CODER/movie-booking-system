@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../api";
@@ -11,7 +10,7 @@ import "../styles/Form.css";
 
 function Login() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState(""); // we treat email as username
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -22,7 +21,6 @@ function Login() {
     setLoading(true);
 
     try {
-      // backend expects username + password → we use email as username
       const res = await api.post("/api/token/", {
         username: email,
         password,
@@ -32,7 +30,7 @@ function Login() {
       localStorage.setItem(REFRESH_TOKEN_KEY, res.data.refresh);
       localStorage.setItem(USERNAME_KEY, email);
 
-      navigate("/catalog");
+      navigate("/catalog"); // redirect after login
     } catch (err) {
       console.error(err);
       setError("Invalid email or password.");
@@ -49,12 +47,14 @@ function Login() {
   return (
     <div className="form-page">
       <div className="form-container">
-        <h1>Login</h1>
-        <p>Enter your credentials to access your account.</p>
+        <h1 className="form-title">Login</h1>
+        <p className="form-subtitle">Enter your credentials to access your account.</p>
 
         <form onSubmit={handleSubmit}>
-          <label>
-            Email Address *
+
+          {/* Email */}
+          <div className="form-group">
+            <label className="form-label">Email Address *</label>
             <input
               type="email"
               className="form-input"
@@ -63,10 +63,11 @@ function Login() {
               onChange={(e) => setEmail(e.target.value)}
               required
             />
-          </label>
+          </div>
 
-          <label>
-            Password *
+          {/* Password */}
+          <div className="form-group">
+            <label className="form-label">Password *</label>
             <input
               type="password"
               className="form-input"
@@ -75,48 +76,35 @@ function Login() {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
-          </label>
+          </div>
 
-          {error && (
-            <p style={{ color: "red", marginTop: "8px", fontSize: "14px" }}>
-              {error}
-            </p>
-          )}
+          {/* Forgot Password */}
+          <p className="forgot-password">
+            <button
+              type="button"
+              className="forgot-password-btn"
+              onClick={handleForgotPassword}
+            >
+              Forgot Password?
+            </button>
+          </p>
 
-          <button
-            type="button"
-            onClick={handleForgotPassword}
-            style={{
-              width: "100%",
-              padding: "10px",
-              marginTop: "8px",
-              marginBottom: "4px",
-              borderRadius: "6px",
-              border: "1px solid #ddd",
-              backgroundColor: "#f8f9fa",
-              cursor: "pointer",
-              fontSize: "14px",
-            }}
-          >
-            Forgot Password?
-          </button>
+          {/* Error Message */}
+          {error && <p className="error-text">{error}</p>}
 
-          <button
-            type="submit"
-            className="form-button"
-            disabled={loading}
-          >
+          {/* Login Button */}
+          <button type="submit" className="form-button" disabled={loading}>
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 
-        <p>
-          Don&apos;t have an account?{" "}
-          <Link to="/register">Register here</Link>
+        <p className="form-footer">
+          Don’t have an account?{" "}
+          <Link className="form-link" to="/register">Register here</Link>
         </p>
 
-        <p>
-          <Link to="/">Back to Home</Link>
+        <p className="form-footer">
+          <Link className="form-link" to="/">Back to Home</Link>
         </p>
       </div>
     </div>

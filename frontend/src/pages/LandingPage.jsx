@@ -13,74 +13,93 @@ function LandingPage() {
 
   useEffect(() => {
     // redirect logged-in users to catalog
-    if(localStorage.getItem(ACCESS_TOKEN_KEY)) {
+    if (localStorage.getItem(ACCESS_TOKEN_KEY)) {
       navigate("/catalog");
     }
 
-    // fetch current movies from backend using axios instance
+    // fetch movies
     api.get('/api/movies/')
       .then(res => setMovies(res.data))
       .catch(err => console.error('Error fetching movies:', err));
   }, [navigate]);
 
-  const handleSearch = (query) => {
-    setSearchQuery(query);
-  };
-
   return (
     <div className="landing-page">
+
+      {/* ==== HEADER ==== */}
       <header className="landing-header">
         <div className="header-content">
           <h1 className="logo">MBS</h1>
+
+          {/* Search Bar */}
           <div className="search-container">
-            <SearchBar value={searchQuery} onChange={handleSearch} />
+            <SearchBar
+              value={searchQuery}
+              onChange={setSearchQuery}
+              placeholder="Search for movies..."
+            />
           </div>
+
+          {/* Login/Register */}
           <div className="auth-buttons">
-            <Link to="/login"><button className="btn-login" type="button">Login</button></Link>
-            <Link to="/register"><button className="btn-register" type="button">Register</button></Link>
+            <Link to="/login"><button className="btn-login">Login</button></Link>
+            <Link to="/register"><button className="btn-register">Register</button></Link>
           </div>
         </div>
       </header>
 
+      {/* ==== HERO SECTION ==== */}
       <section className="hero-section">
         <div className="hero-content">
           <div className="hero-text">
             <h2 className="hero-title">Book Your Favorite <br /> Movies Instantly</h2>
             <p className="hero-subtitle">
-              Explore the latest blockbusters and reserve your seats in seconds. Simple, fast, and secure.
+              Explore the latest blockbusters and reserve your seats in seconds.
+              Simple, fast, and secure.
             </p>
+
             <Link to="/login">
-              <button className="btn-browse" type="button">Browse Movies</button>
+              <button className="btn-browse">Browse Movies</button>
             </Link>
           </div>
+
           <div className="hero-image">
-            <img src={heroImage} alt="Cinema seats with projector" />
+            <img src={heroImage} alt="Cinema seats" />
           </div>
         </div>
       </section>
 
+      {/* ==== FEATURED SECTION ==== */}
       <section className="featured-section">
-        <h3 className="section-title">Featured</h3>
+        <div className="featured-header">
+          <h3 className="section-title">Featured Movies</h3>
+        </div>
+
         <div className="movies-grid">
           {movies
-            .filter(movie => movie.title.toLowerCase().includes(searchQuery.toLowerCase()))
+            .filter(m => m.title.toLowerCase().includes(searchQuery.toLowerCase()))
             .map(movie => (
               <div key={movie.id} className="movie-card">
                 <img src={movie.poster_url} alt={movie.title} className="movie-poster" />
+
                 <h4 className="movie-title">{movie.title}</h4>
+
                 <Link to={`/book/${movie.id}`}>
-                  <button className="btn-view-details" type="button">View Details</button>
+                  <button className="btn-view-details">View Details</button>
                 </Link>
               </div>
             ))}
         </div>
-        {movies.filter(movie => movie.title.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 && searchQuery && (
-          <p style={{ textAlign: "center", color: "#94a3b8", marginTop: "20px" }}>
-            No movies found matching "{searchQuery}". Please try another search.
-          </p>
-        )}
+
+        {movies.filter(m => m.title.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 &&
+          searchQuery && (
+            <p className="no-results">
+              No movies found for "{searchQuery}". Try another search.
+            </p>
+          )}
       </section>
 
+      {/* ==== FOOTER ==== */}
       <footer className="landing-footer">
         <p>© Movie Booking System 2025 | Contact Us | Terms of Service</p>
       </footer>

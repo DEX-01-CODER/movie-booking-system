@@ -14,7 +14,7 @@ export default function ReviewItem({review}) {
                 {dateStr && <span style={{color: '#888', fontSize: '0.9em'}}>({dateStr})</span>}
             </div>
             <p>
-                Rating: {(review.rating / 2).toFixed(1)} / 5 stars
+                Rating: {(review.rating).toFixed(1)} / 5 stars
             </p>
             <p>
                 {review.comment}
