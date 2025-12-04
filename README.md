@@ -1,71 +1,111 @@
-## Movie Booking System — Phase 2
-## Current Progress
+# 🎬 Movie Booking System
 
-https://github.com/user-attachments/assets/f6e7a8b6-7e5a-4261-8876-fcb76857d707
+A full‑stack web application for browsing movies, booking tickets, managing user accounts, and submitting reviews.
+Built with **React (frontend)** and **Django REST Framework (backend)**.
 
+---
 
-<br>
+## 🌟 Features
 
-### Overview
-- **Django REST Framework** (Backend API)
-- **React + Vite** (Frontend)
-- **PostgreSQL** (Cloud Database, hosted on Render.com)
-- **JWT Authentication** (Access & Refresh Tokens)
+### 🎟️ User Features
+- Browse **Current**, **Upcoming**, and **All** Movies
+- View detailed movie information
+- Book tickets with seat confirmation
+- Submit and view reviews & ratings
+- Manage profile (name, email, phone)
+- View order history and past bookings
+- Secure login & registration system
 
-#### Getting Started
-```bash
-git clone https://github.com/DEX-01-CODER/movie-booking-system.git
+### 👨‍💼 Admin Features
+- Add / Edit / Delete Movies
+- Manage Theaters & Shows
+- Manage Tickets and Payments
+- Moderate Reviews
+
+---
+
+## 🧱 Tech Stack
+
+### **Frontend**
+- React + Vite
+- React Router
+- Context API for state management
+- Custom UI components (cards, modals, forms)
+
+### **Backend**
+- Django
+- Django REST Framework
+- SQLite (local) / PostgreSQL (production)
+
+---
+
+## 🚀 Getting Started
+
+### 1️⃣ Clone the Repository
+```
+git clone https://github.com/DEX-01-CODER/movie-booking-system
 cd movie-booking-system
 ```
 
-### Backend Setup
-```bash
-python -m venv env
-```
-#### Activate: <br>
-#### Windows: <br>
-``` 
-.\venv\Scripts\Activate.ps1
-```
-#### Mac/Linux: <br>
-```
-source env/bin.activate
-```
+---
 
-#### Install Dependencies
+## 🖥️ Start Backend (Django)
 ```
 cd backend
 pip install -r requirements.txt
+python manage.py migrate
+python manage.py runserver
 ```
 
-##### Environment Variables
-1. Duplicate example env file:
-   ```
-   cp .env.example .env
-   ```
-2. Fill in the database credentials:
-   ```
-   DB_HOST=
-   DB_PORT=
-   DB_USER=
-   DB_NAME=
-   DB_PWD=
-   ```
-### Frontend
+---
+
+## 💻 Start Frontend (React)
 ```
 cd frontend
 npm install
-```
-
-### Running the App
-```
-cd backend
-python manage.py runserver
-```
-```
-cd frontend
 npm run dev
 ```
 
+---
 
-Docs live in `docs/phase2`. Update `API.md`, diagrams, and `DemoScript.md` as you build.
+## 📁 Project Structure
+```
+movie-booking-system/
+│
+├── backend/
+│   └── api/
+│       ├── models.py
+│       ├── serializers.py
+│       ├── views.py
+│       ├── urls.py
+│       └── migrations/
+│
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   └── styles/
+│   ├── index.html
+│   └── package.json
+│
+└── README.md
+```
+
+---
+
+## 🔒 Security Notes
+- Do NOT commit `.env` files
+- API keys / secrets must stay local
+- Always test before pushing changes
+
+---
+
+## 📬 Contributing
+This project is mainly for coursework & personal learning.
+If you want to help, feel free to open issues or PRs.
+
+---
+
+## 🧑‍💻 Author
+**Rushikesh Reddy Bayyapu**
+Movie Booking System — Full‑Stack Implementation

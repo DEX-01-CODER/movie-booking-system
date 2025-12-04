@@ -73,31 +73,19 @@ TEMPLATES = [
 WSGI_APPLICATION = 'backend.wsgi.application'
 
 
-<<<<<<< HEAD
 
 # Production: use PostgreSQL from environment variables
-=======
-# ---- Database Configuration (PostgreSQL only) ----
-
->>>>>>> 3cb7604 (Updated UI, fixed reviews page styling, removed address field, improved header layout)
+# --- Database Configuration (PostgreSQL only) ---
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": os.getenv("DB_NAME"),
         "USER": os.getenv("DB_USER"),
         "PASSWORD": os.getenv("DB_PWD"),
-<<<<<<< HEAD
-        "HOST": os.getenv("DB_HOST"),
-        "PORT": os.getenv("DB_PORT"),
-    }
-}
-=======
         "HOST": os.getenv("DB_HOST", "localhost"),
         "PORT": os.getenv("DB_PORT", "5432"),
     }
 }
-
->>>>>>> 3cb7604 (Updated UI, fixed reviews page styling, removed address field, improved header layout)
 
 
 # --- Password Validation ---
