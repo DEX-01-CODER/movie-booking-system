@@ -107,9 +107,10 @@ If you want to help, feel free to open issues or PRs.
 ---
 
 ## 🧑‍💻 Author
-**Rushikesh Reddy Bayyapu**
-**Austin Perez**
-**Ethan Spillman**
-**Eitan Holdeman**
-**Abhimnayu Karki**
-Movie Booking System — Full‑Stack Implementation
+Rushikesh Reddy Bayyapu
+Austin Perez
+Ethan Spillman
+Eitan Holdeman
+Abhimnayu Karki
+
+Movie Booking System — Full-Stack Implementation
