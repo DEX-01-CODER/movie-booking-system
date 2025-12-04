@@ -1,12 +1,12 @@
 import { useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import html2pdf from "html2pdf.js";
+// import html2pdf from "html2pdf.js";
 import "../styles/PaymentSuccess.css";
 
 function PaymentSuccess() {
     const location = useLocation();
     const navigate = useNavigate();
-    const ticketRef = useRef(); 
+    const ticketRef = useRef();
     const { booking, movie } = location.state || {};
 
     if (!booking) return <div className="error-msg">No booking details found. Please book a ticket first.</div>;
@@ -24,9 +24,9 @@ function PaymentSuccess() {
             margin:       10,
             filename:     `MBS-Ticket-${booking.id}.pdf`,
             image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { 
-                scale: 2, 
-                useCORS: true, 
+            html2canvas:  {
+                scale: 2,
+                useCORS: true,
                 scrollY: 0,
             },
             jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
@@ -40,7 +40,7 @@ function PaymentSuccess() {
             <h1 className="page-header no-print">
                 <span onClick={() => navigate("/")} style={{cursor: "pointer"}} title="Go to Home">
                     Movie Booking System (MBS)
-                </span> 
+                </span>
                 <span className="profile-icon">👤 Profile</span>
             </h1>
 
@@ -70,12 +70,12 @@ function PaymentSuccess() {
                         <p><strong>Ticket ID:</strong> MBS-TKT-{booking.id}</p>
                         <p><strong>Status:</strong> {booking.status}</p>
                     </div>
-                    
+
                     <div className="ticket-qr">
-                        <img 
-                            src={qrUrl} 
-                            alt={`QR Code for Ticket ${booking.id}`} 
-                            crossOrigin="anonymous" 
+                        <img
+                            src={qrUrl}
+                            alt={`QR Code for Ticket ${booking.id}`}
+                            crossOrigin="anonymous"
                         />
                     </div>
                 </div>
@@ -86,7 +86,7 @@ function PaymentSuccess() {
                 <button className="btn-primary" onClick={handleDownload}>Download Ticket (PDF)</button>
                 <button className="btn-secondary" onClick={handlePrint}>Print Ticket</button>
                 <a onClick={() => navigate("/my-orders")} className="link-text">Go to My Orders</a>
-                
+
                 <button className="btn-home-link" onClick={() => navigate("/")}>
                     Return to Home Page
                 </button>

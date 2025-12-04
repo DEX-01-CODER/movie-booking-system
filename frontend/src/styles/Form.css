@@ -7,19 +7,19 @@
   align-items: center;
   justify-content: center;
   padding: 40px 16px;
-  background: #020617; /* solid dark to match landing */
+  background: #020617;
 }
 
-/* Main card (Login + Register + Profile) */
+/* Main card */
 .form-container,
 .profile-card {
   width: 100%;
   max-width: 560px;
-  background: #0f172a; /* darker navy – separates from background */
+  background: #0f172a;
   border-radius: 20px;
   padding: 36px 36px 40px;
   box-shadow: 0 25px 60px rgba(0, 0, 0, 0.65);
-  border: 1px solid rgba(148, 163, 184, 0.18); /* subtle border */
+  border: 1px solid rgba(148, 163, 184, 0.18);
   animation: fadeUp 0.6s ease-out forwards;
   color: #e5e7eb;
 }
@@ -41,7 +41,7 @@
   text-align: center;
 }
 
-/* Form groups */
+/* Inputs & Labels */
 .form-group {
   margin-bottom: 18px;
 }
@@ -50,11 +50,9 @@
   display: block;
   margin-bottom: 6px;
   font-size: 0.9rem;
-  font-weight: 500;
   color: #cbd5e1;
 }
 
-/* Inputs */
 .form-input {
   width: 100%;
   padding: 12px 14px;
@@ -63,12 +61,6 @@
   background: #1e293b;
   color: #f8fafc;
   font-size: 0.96rem;
-  outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.form-input::placeholder {
-  color: #64748b;
 }
 
 .form-input:focus {
@@ -88,7 +80,7 @@
   font-weight: 600;
   cursor: pointer;
   margin-top: 6px;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: 0.15s;
 }
 
 .form-button:hover {
@@ -96,23 +88,32 @@
   box-shadow: 0 12px 28px rgba(37, 99, 235, 0.45);
 }
 
-/* Danger button (Logout) */
-.form-button.danger {
-  background: #dc2626;
+/* Error text */
+.error-text {
+  color: #f87171;
+  margin-top: 6px;
+  font-size: 0.9rem;
 }
 
-.form-button.danger:hover {
-  box-shadow: 0 12px 28px rgba(220, 38, 38, 0.45);
+
+.forgot-password {
+  text-align: right;
+  margin-top: -6px;
+  margin-bottom: 18px;
 }
 
-/* Checkbox row */
-.form-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 8px 0 20px;
-  color: #94a3b8;
-  font-size: 0.85rem;
+.forgot-password-btn {
+  background: none;
+  border: none;
+  color: #60a5fa;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0;
+}
+
+.forgot-password-btn:hover {
+  text-decoration: underline;
+  color: #93c5fd;
 }
 
 /* Footer links */
@@ -125,64 +126,41 @@
 
 .form-link {
   color: #60a5fa;
-  cursor: pointer;
 }
 
 .form-link:hover {
   text-decoration: underline;
 }
 
-/* Back to home button */
+/* Secondary / outline button (e.g., Back to Catalog) */
 .form-link-button {
-  margin-top: 14px;
-  color: #93c5fd;
-  background: none;
-  border: none;
+  width: 100%;
+  background: transparent;
+  color: #e5e7eb;
+  border-radius: 999px;
+  border: 1px solid #334155;
+  padding: 12px 0;
+  font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
-  font-size: 0.9rem;
-  text-decoration: underline;
+  margin-top: 6px;
+  transition: 0.15s;
 }
 
 .form-link-button:hover {
-  color: #bfdbfe;
-}
-
-
-.password-field {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.password-field .form-input {
-  padding-right: 3rem; 
-}
-
-.password-toggle {
-  position: absolute;
-  right: 0.9rem;
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 1rem;
-  color: #9ca3af;
+  background: #1e293b;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.65);
 }
 
 /* Animation */
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* Mobile tweaks */
-@media (max-width: 480px) {
-  .form-container,
-  .profile-card {
-    padding: 28px 22px 30px;
-    border-radius: 16px;
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
-
-  .form-title {
-    font-size: 1.7rem;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

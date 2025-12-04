@@ -3,76 +3,82 @@
   min-height: 100vh;
   background-color: #020617;
   color: #e5e7eb;
+  font-family: Inter, sans-serif;
 }
 
-/* Top header bar */
+/* ===== TOP NAV BAR ===== */
 .home-header {
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 20;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 40px;
+
+  padding: 14px 38px;
   background-color: #020617;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.22);
+
+  flex-wrap: nowrap;   /* PREVENT items from moving up/down */
+  gap: 26px;
 }
 
+/* LOGO */
 .home-logo {
-  font-size: 1.8rem;
-  font-weight: 800;
+  font-size: 1.7rem;      /* Smaller font */
+  font-weight: 700;
   color: #2563eb;
+  white-space: nowrap;
+  margin-right: 24px;
 }
 
-/* Center nav tabs (Current / Upcoming) */
+/* CENTER NAV TABS */
 .home-nav {
   display: flex;
-  gap: 24px;
+  align-items: center;
+  gap: 16px;             /* Reduce spacing */
+  white-space: nowrap;
 }
 
+/* NAV BUTTONS */
 .home-nav-link {
-  background: transparent;
+  background: #0b1220;
   border: none;
-  font-size: 0.98rem;
-  font-weight: 500;
-  color: #9ca3af;
-  padding-bottom: 6px;
+  font-size: 0.92rem;    /* smaller font */
+  padding: 8px 18px;     /* reduced size */
+  color: #e5e7eb;
+  border-radius: 40px;
   cursor: pointer;
-  border-bottom: 2px solid transparent;
-  transition: color 0.2s ease, border-color 0.2s ease;
+  transition: 0.22s ease;
 }
-
 
 .home-nav-link--active {
-  color: #ffffff;
-  border-color: #2563eb;
+  background: #2563eb;
+  color: #fff;
 }
 
 .home-nav-link:hover {
-  color: #e5e7eb;
+  background: #1e293b;
+  color: white;
 }
 
-/* Right side: search box + Profile/Logout buttons */
+/* RIGHT SECTION */
 .home-right {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;             /* bring items closer */
+  white-space: nowrap;
 }
 
 .home-search {
-  width: 220px;
-  padding: 8px 12px;
-  border-radius: 999px;
+  width: 300px;         /* slightly smaller */
+  background: #0b1220;
+  padding: 10px 18px;
+  border-radius: 40px;
   border: 1px solid #4b5563;
-  background-color: #020617;
   color: #e5e7eb;
-  font-size: 0.9rem;
   outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.home-search::placeholder {
-  color: #6b7280;
 }
 
 .home-search:focus {
@@ -80,144 +86,128 @@
   box-shadow: 0 0 0 1px #2563eb;
 }
 
+/* ACCOUNT + LOGOUT text */
 .home-link-btn {
   background: transparent;
   border: none;
-  font-size: 0.9rem;
-  color: #e5e7eb;
+  color: #d1d5db;
+  font-size: 0.92rem;
   cursor: pointer;
   padding: 6px 10px;
-  border-radius: 999px;
-  transition: background-color 0.2s ease;
 }
 
 .home-link-btn:hover {
-  background-color: #111827;
+  color: white;
 }
 
-/* Main content area */
+/* MAIN WRAPPER */
 .home-content {
-  max-width: 1100px;
-  margin: 26px auto 50px;
-  padding: 0 24px;
+  max-width: 1300px;
+  margin: 40px auto 70px;
+  padding: 0 32px;
 }
 
-/* Section card (wraps the grid) */
+/* ==== FEATURED SECTION BOX ==== */
 .home-section {
-  background-color: #111827;
+  background-color: #050816;
   border-radius: 18px;
-  padding: 24px 24px 32px;
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
-  animation: fadeUp 0.6s ease-out forwards;
+  padding: 28px;
+  box-shadow: 0 22px 45px rgba(0, 0, 0, 0.45);
 }
 
+/* Heading inside the box */
 .home-section-title {
-  margin: 0 0 20px;
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   font-weight: 600;
   color: #f9fafb;
+  margin-bottom: 24px;
 }
 
-
+/* GRID LAYOUT */
 .home-movie-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: 22px;
-  align-items: stretch;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 28px;
 }
 
-
+/* ==== MOVIE CARD (new compact design) ==== */
 .movie-card {
   background: #020617;
   border-radius: 14px;
   overflow: hidden;
-  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.45);
-  display: flex;
-  flex-direction: column;
-  border: 1px solid rgba(148, 163, 184, 0.3);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-  height: 100%;                    /
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  transition: 0.25s ease;
+  text-align: center;
 }
 
 .movie-card:hover {
   transform: translateY(-6px);
-  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.9);
   border-color: #2563eb;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.55);
 }
 
+/* Poster */
 .movie-poster {
   width: 100%;
   height: 220px;
   object-fit: cover;
-  background-color: #1f2933;
 }
 
-
+/* Movie title */
 .movie-title {
-  padding: 14px 16px;
+  padding: 12px 8px 2px;
+  color: #f8fafc;
   font-size: 1rem;
-  font-weight: 500;
-  color: #e5e7eb;
-  border-top: 1px solid rgba(148, 163, 184, 0.35);
-  min-height: 56px;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  font-weight: 600;
+  min-height: 45px;
 }
 
-
+/* VIEW DETAILS BUTTON (small pill) */
 .home-card-button {
-  width: 100%;
-  background-color: #2563eb;
-  color: #ffffff;
+  background: #1e293b;
   border: none;
-  padding: 10px 0;
-  font-size: 0.95rem;
-  font-weight: 600;
+  margin: 10px auto 18px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  color: #e5e7eb;
+  font-size: 0.9rem;
   cursor: pointer;
-  transition: background-color 0.2s ease;
-  margin-top: auto;                
+  transition: 0.2s ease;
 }
 
 .home-card-button:hover {
-  background-color: #1d4ed8;
+  background: #2563eb;
+  color: white;
 }
 
-/* ==== ANIMATION ==== */
-@keyframes fadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+/* FOOTER */
+.home-footer {
+  text-align: center;
+  padding: 20px 0 40px;
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+/* RESPONSIVE */
+@media (max-width: 1200px) {
+  .home-movie-grid {
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
-/* ==== RESPONSIVE ==== */
 @media (max-width: 900px) {
   .home-header {
     flex-wrap: wrap;
-    gap: 10px;
+    justify-content: center;
+    gap: 16px;
   }
-
-  .home-right {
-    width: 100%;
-    justify-content: flex-end;
+  .home-movie-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 640px) {
-  .home-header {
-    padding: 12px 16px;
-  }
-
-  .home-content {
-    padding: 0 16px;
-  }
-
   .home-movie-grid {
     grid-template-columns: 1fr;
   }

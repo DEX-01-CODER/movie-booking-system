@@ -8,33 +8,98 @@ from django.contrib.auth.models import User
 
 # User Serializer
 class UserSerializer(serializers.ModelSerializer):
+    # Use first_name as "full_name" for simplicity
     full_name = serializers.CharField(source="first_name", required=False)
-    phone_number = serializers.SerializerMethodField()
-    address = serializers.SerializerMethodField()
-    
+
+    # These are fields we *write* via the serializer and also *read* from UserProfile
+    phone_number = serializers.CharField(required=False, allow_blank=True)
+    address = serializers.CharField(required=False, allow_blank=True)
+
     class Meta:
         model = User
-        fields = ["id", "username", "email", "full_name", "phone_number", "address", "password", "is_staff"]
+        fields = [
+            "id",
+            "username",
+            "email",
+            "full_name",
+            "phone_number",
+            "address",
+            "password",
+            "is_staff",
+        ]
         extra_kwargs = {
-            "password": {"write_only": True, "min_length": 6}
+            "password": {"write_only": True, "min_length": 6},
         }
 
-    def get_phone_number(self, obj):
-        return obj.profile.phone_number if hasattr(obj, 'profile') else None
-    
-    def get_address(self, obj):
-        return obj.profile.address if hasattr(obj, 'profile') else None
-
     def create(self, validated_data):
+        """
+        Create a new User + UserProfile.
+        - full_name is mapped to first_name via source="first_name"
+        - phone_number / address are stored on UserProfile
+        """
+        phone = validated_data.pop("phone_number", "")
+        address = validated_data.pop("address", "")
         password = validated_data.pop("password", None)
+
         user = User(**validated_data)
         if password:
             user.set_password(password)
         user.save()
-        # Create UserProfile
-        UserProfile.objects.get_or_create(user=user)
+
+        # Create or update the related UserProfile
+        UserProfile.objects.update_or_create(
+            user=user,
+            defaults={
+                "phone_number": phone,
+                "address": address,
+            },
+        )
         return user
 
+    def update(self, instance, validated_data):
+        """
+        Update User + UserProfile from profile page.
+        """
+        phone = validated_data.pop("phone_number", None)
+        address = validated_data.pop("address", None)
+        password = validated_data.pop("password", None)
+
+        # Update base User fields (username, email, first_name, etc.)
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        if password:
+            instance.set_password(password)
+
+        instance.save()
+
+        # Update profile data if provided
+        if phone is not None or address is not None:
+            profile, _ = UserProfile.objects.get_or_create(user=instance)
+            if phone is not None:
+                profile.phone_number = phone
+            if address is not None:
+                profile.address = address
+            profile.save()
+
+        return instance
+
+    def to_representation(self, instance):
+        """
+        When sending data to the frontend, pull phone/address
+        from the related UserProfile.
+        """
+        rep = super().to_representation(instance)
+        profile = getattr(instance, "profile", None)
+
+        if profile:
+            rep["phone_number"] = profile.phone_number
+            rep["address"] = profile.address
+        else:
+            rep["phone_number"] = ""
+            rep["address"] = ""
+
+        return rep
 
 
 class MovieSerializer(serializers.ModelSerializer):
@@ -43,12 +108,20 @@ class MovieSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
         fields = [
-            "id", "title", "description", "cast", "genre",
-            "runtime_minutes", "release_date", "rating",
-            "poster_url", "trailer_url", "is_current",
-            "created_at", "updated_at"
+            "id",
+            "title",
+            "description",
+            "cast",
+            "genre",
+            "runtime_minutes",
+            "release_date",
+            "rating",
+            "poster_url",
+            "trailer_url",
+            "is_current",
+            "created_at",
+            "updated_at",
         ]
-
 
 
 class SeatSerializer(serializers.ModelSerializer):
@@ -63,7 +136,6 @@ class TheaterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Theater
         fields = ["id", "name", "address", "total_seats", "seats"]
-
 
 
 class ShowSeatSerializer(serializers.ModelSerializer):
@@ -83,11 +155,18 @@ class ShowSerializer(serializers.ModelSerializer):
     class Meta:
         model = Show
         fields = [
-            "id", "movie", "movie_title", "theater", "theater_name",
-            "showtime", "price", "is_active", "created_at", "updated_at",
-            "show_seats"
+            "id",
+            "movie",
+            "movie_title",
+            "theater",
+            "theater_name",
+            "showtime",
+            "price",
+            "is_active",
+            "created_at",
+            "updated_at",
+            "show_seats",
         ]
-
 
 
 class TicketSeatSerializer(serializers.ModelSerializer):
@@ -113,15 +192,26 @@ class TicketSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ticket
         fields = [
-            "id", "user", "show", "movie_title", "theater_name",
-            "show_time", "seats", "total_price", "status",
-            "booking_time", "ticket_qr", "created_at", "updated_at",
-            "cancelled_at", "cancellation_reason", "refund_amount"
+            "id",
+            "user",
+            "show",
+            "movie_title",
+            "theater_name",
+            "show_time",
+            "seats",
+            "total_price",
+            "status",
+            "booking_time",
+            "ticket_qr",
+            "created_at",
+            "updated_at",
+            "cancelled_at",
+            "cancellation_reason",
+            "refund_amount",
         ]
         extra_kwargs = {
-            "user": {"read_only": True}
+            "user": {"read_only": True},
         }
-
 
 
 class PaymentSerializer(serializers.ModelSerializer):
@@ -129,7 +219,16 @@ class PaymentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Payment
-        fields = ["id", "ticket", "ticket_id", "amount", "method", "status", "transaction_id", "timestamp"]
+        fields = [
+            "id",
+            "ticket",
+            "ticket_id",
+            "amount",
+            "method",
+            "status",
+            "transaction_id",
+            "timestamp",
+        ]
 
 
 class ReviewSerializer(serializers.ModelSerializer):

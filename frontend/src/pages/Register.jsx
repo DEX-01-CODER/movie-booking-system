@@ -8,7 +8,6 @@ function Register() {
   const navigate = useNavigate();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
-  const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -33,12 +32,14 @@ function Register() {
     setLoading(true);
 
     try {
-      // For now, backend expects username + password.
-      // We use email as username. Extra fields can be used later
-      // when you extend the backend profile model.
+      // Backend user registration via UserSerializer
+      // We use email as both username and email field.
       const payload = {
         username: email,
-        password,
+        email: email,
+        full_name: fullName,
+        phone_number: phone,
+        password: password,
       };
 
       await api.post("/api/user/register/", payload);
@@ -80,18 +81,6 @@ function Register() {
               placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </label>
-
-          <label>
-            Address *
-            <input
-              type="text"
-              className="form-input"
-              placeholder="Enter your address"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
               required
             />
           </label>
