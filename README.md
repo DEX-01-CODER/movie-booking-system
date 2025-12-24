@@ -5,6 +5,15 @@ Built with **React (frontend)** and **Django REST Framework (backend)**.
 
 ---
 
+### NOTE: Populating the Database with Mock Data
+After setting up your database and running migrations, you can load the mock data:
+```
+cd backend
+python manage.py loaddata latest_data.json
+```
+
+This will populate your database with the latest mock data for development and testing.
+
 ## 🌟 Features
 
 ### 🎟️ User Features
